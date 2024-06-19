@@ -31,7 +31,7 @@ export const Login = () => {
             <input type="text" name="userId" ref={user.userId} />
             <br />
             <label htmlFor="password">비밀번호:</label>
-            <input type="text" name="password" ref={user.password} />
+            <input type="password" name="password" ref={user.password} />
             <br />
             <button onClick={loginInfo}>제출</button>
         </div>
