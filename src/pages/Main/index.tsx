@@ -27,28 +27,29 @@ export const Main = () => {
     <div>
       <Header />
       {/* 임시 버튼 */}
-      <div className="flex">
-        <Link to="/">home</Link>
-        <Link to="/board">게시판</Link>
-        <Link to="/matching">매칭</Link>
-
+      <div className="px-5">
         <div className="flex">
-          {userInfo == null ? (
-            <>
-              <Link to="/login">로그인</Link>
-              <Link to="/sign-up">회원가입</Link>
-            </>
-          ) : (
-            <>
-              <span>{userInfo.userId}님 안녕하세요</span>
-              <Link to="/" onClick={logout}>
-                로그아웃
-              </Link>
-            </>
-          )}
+          <Link to="/board">게시판</Link>
+          <Link to="/matching">매칭</Link>
+
+          <div className="flex">
+            {userInfo == null ? (
+              <>
+                <Link to="/login">로그인</Link>
+                <Link to="/sign-up">회원가입</Link>
+              </>
+            ) : (
+              <>
+                <span>{userInfo.userId}님 안녕하세요</span>
+                <Link to="/" onClick={logout}>
+                  로그아웃
+                </Link>
+              </>
+            )}
+          </div>
         </div>
+        <div id="map" style={{ width: "350px", height: "350px" }} />
       </div>
-      <div id="map" style={{ width: "350px", height: "350px" }} />
     </div>
   );
 };
