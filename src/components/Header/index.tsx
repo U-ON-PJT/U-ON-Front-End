@@ -10,7 +10,7 @@ export const Header = () => {
   const { logout } = useContext(UserContext);
 
   return (
-    <nav className="flex justify-between px-4 py-4 mt-2">
+    <nav className="flex justify-between px-5 py-4 mt-2">
       <FontAwesomeIcon icon={faBars} className="" />
       <Link to="/">
         <img alt="logo" src="logo.png" width="25%" />
