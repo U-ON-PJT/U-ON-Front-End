@@ -1,4 +1,4 @@
-import { Children, createContext, useState } from "react";
+import { Children, createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
@@ -14,7 +14,9 @@ interface UserInfo {
     point: string,
 }
 
+
 interface Context {
+    commonUrl: string;
     userInfo: UserInfo | null;
     login: (user: string, password: string) => void;
     logout: () => void;
@@ -22,6 +24,7 @@ interface Context {
 
 // 초기 Context 값 설정
 const initialContext: Context = {
+    commonUrl: "http://localhost:80/uon/",
     userInfo: null,
     login: () => {},
     logout: () => {},
@@ -37,9 +40,34 @@ interface Props {
 const UserContextProvider = ({ children }: Props) => {
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
+    const [commonUrl, setCommonUrl] = useState<string>("http://localhost:80/uon/");
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decodeToken: any = jwtDecode(token);
+                const user: UserInfo = {
+                    userId: decodeToken.id,
+                    name: decodeToken.name,
+                    birth: decodeToken.birth,
+                    role: decodeToken.role,
+                    dongCode: decodeToken.dongCode,
+                    center: decodeToken.center,
+                    experience: decodeToken.experience,
+                    level: decodeToken.level,
+                    point: decodeToken.point,
+                };
+                setUserInfo(user);
+            } catch (error) {
+                console.error("Invalid token:", error);
+            }
+        }
+    }, []);
+
     const login = async (userId: string, password: string) => {
         const resp = await axios.post(
-            "http://localhost:80/uon/users/login",
+            `${commonUrl}users/login`,
             {
                 userId,
                 password
@@ -72,7 +100,7 @@ const UserContextProvider = ({ children }: Props) => {
     }
 
     return (
-        <UserContext.Provider value={{ userInfo, login, logout }}>
+        <UserContext.Provider value={{ commonUrl, userInfo, login, logout }}>
             {children}
         </UserContext.Provider>
     )
