@@ -1,37 +1,35 @@
 import { Header } from "components/Header";
-import { Routes, Route, Link } from "react-router-dom";
-import { useContext } from "react";
+import { Routes, Route, Link, NavLink, useLocation } from "react-router-dom";
+import { useContext, useState } from "react";
 import { UserContext } from "contexts/Login";
-import { useEffect } from "react";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Matching } from "pages/Matching";
+import { Board } from "pages/Board";
+import { Card } from "./card";
 
-declare global {
-  interface Window {
-    kakao: any;
-  }
-}
 export const Main = () => {
-  useEffect(() => {
-    let container = document.getElementById(`map`); // 지도를 담을 영역의 DOM 레퍼런스
-    let options = {
-      center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도 중심 좌표
-      level: 3, // 지도의 레벨(확대, 축소 정도)
-    };
-
-    let map = new window.kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
-  }, []);
   const { userInfo } = useContext(UserContext);
   const { logout } = useContext(UserContext);
+  const [activeTab, setActiveTab] = useState(1);
+
+  const handleTabClick = (id: number) => {
+    setActiveTab(id);
+  };
+
+  const tabs = [
+    { id: 1, component: <Matching /> },
+    { id: 2, component: <Board /> },
+  ];
+
+  const ActiveComponent = tabs.find((tab) => tab.id === activeTab)?.component;
+
   return (
     <div>
       <Header />
       {/* 임시 버튼 */}
       <div className="px-5">
         <div className="flex">
-          <Link to="/board">게시판</Link>
-          <Link to="/matching">매칭</Link>
-
           <div className="flex">
             {userInfo == null ? (
               <>
@@ -48,7 +46,30 @@ export const Main = () => {
             )}
           </div>
         </div>
-        <div id="map" style={{ width: "350px", height: "350px" }} />
+        <Card />
+        <div className="text-left space-x-4 text-lg my-4">
+          <button
+            className={
+              activeTab === 1
+                ? "font-semibold border-b-2 pb-1 border-b-black"
+                : ""
+            }
+            onClick={() => handleTabClick(1)}
+          >
+            취미 매칭
+          </button>
+          <button
+            className={
+              activeTab === 2
+                ? "font-semibold border-b-2 pb-1 border-b-black"
+                : ""
+            }
+            onClick={() => handleTabClick(2)}
+          >
+            게시판
+          </button>
+        </div>
+        <div>{ActiveComponent}</div>
       </div>
     </div>
   );
