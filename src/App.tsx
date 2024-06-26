@@ -11,10 +11,12 @@ import { Board } from "pages/Board";
 import { BoardDetail } from "pages/Board/boardDetail";
 import { Write } from "pages/Board/write";
 import { BoardUpdate } from "pages/Board/update";
+import { MatchingDetail } from "pages/Matching/matchingDetail";
 
 function App() {
   return (
     <div className="App">
+      <Header />
       <Routes>
         <Route path="/" element={<Main />}></Route>
         <Route path="/login" element={<Login />}></Route>
@@ -23,6 +25,7 @@ function App() {
         <Route path="/board/:boardId" element={<BoardDetail />}></Route>
         <Route path="/board/modify/:boardId" element={<BoardUpdate />}></Route>
         <Route path="/board/write" element={<Write />}></Route>
+        <Route path="/matching" element={<MatchingDetail />}></Route>
       </Routes>
     </div>
   );
