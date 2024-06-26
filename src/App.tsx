@@ -9,6 +9,8 @@ import { Signup } from "pages/Signup";
 import { Main } from "pages/Main";
 import { Board } from "pages/Board";
 import { BoardDetail } from "pages/Board/boardDetail";
+import { Write } from "pages/Board/write";
+import { BoardUpdate } from "pages/Board/update";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
         <Route path="/sign-up" element={<Signup />}></Route>
         <Route path="/board" element={<Board />}></Route>
         <Route path="/board/:boardId" element={<BoardDetail />}></Route>
+        <Route path="/board/modify/:boardId" element={<BoardUpdate />}></Route>
+        <Route path="/board/write" element={<Write />}></Route>
       </Routes>
     </div>
   );
