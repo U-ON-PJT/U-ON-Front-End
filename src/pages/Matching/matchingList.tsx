@@ -16,9 +16,12 @@ export const MatchingList = () => {
           <p>대전광역시 유성구 봉명동</p>
           <p>인원: 2 / 6</p>
         </div>
-        <button className="bg-main-color rounded-md px-3 text-white shadow-md">
+        <Link
+          to="/matching"
+          className="bg-main-color rounded-md px-3 py-3 text-white shadow-md"
+        >
           신청 가능
-        </button>
+        </Link>
       </div>
       <div className="flex justify-between align-middle border-b border-gray-500 py-4">
         <p className="font-semibold">17:00</p>
@@ -27,9 +30,12 @@ export const MatchingList = () => {
           <p>대전광역시 유성구 봉명동</p>
           <p>인원: 6 / 6</p>
         </div>
-        <button className="bg-gray-500 rounded-md px-3 text-white shadow-md">
+        <Link
+          to="/matching"
+          className="bg-gray-500 rounded-md px-3 py-3 text-white shadow-md"
+        >
           신청 불가
-        </button>
+        </Link>
       </div>
     </div>
   );
