@@ -1,8 +1,9 @@
 
 import { Header } from "components/Header"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useContext } from "react"
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { UserContext } from "contexts/Login";
 
 export const Board = () => {
 
@@ -10,8 +11,12 @@ export const Board = () => {
 
     const [currentType, setCurrentType] = useState(0);
 
+    const { userInfo } = useContext(UserContext);
+
+    const { commonUrl } = useContext(UserContext);
+
     const getBoardList = async () => {
-        const url = `http://localhost:80/uon/boards/${currentType}`;
+        const url = `${commonUrl}boards/${currentType}`;
         const { data } = await axios.get(url);
 
         // console.log(data);
@@ -34,9 +39,9 @@ export const Board = () => {
         <div>
             <Header />
             <h1>공지사항</h1>
-            <button onClick={() => changeType(0)}>전체</button>
-            <button onClick={() => changeType(1)}>공지</button>
-            <button onClick={() => changeType(2)}>취업</button>
+            <button className="mr-2" onClick={() => changeType(0)}>전체</button>
+            <button className="mr-2" onClick={() => changeType(1)}>공지</button>
+            <button className="mr-2" onClick={() => changeType(2)}>취업</button>
             <button onClick={() => changeType(3)}>교육</button>
             <ul>
                 {
@@ -47,6 +52,11 @@ export const Board = () => {
                     ))
                 }
             </ul>
+            {
+                userInfo!=null && userInfo.role=="1"?
+                    <Link to="/board/write">글쓰기</Link>
+                    : null
+            }
         </div>
     )
 }
