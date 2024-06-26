@@ -13,6 +13,7 @@ import { BoardDetail } from "pages/Board/boardDetail";
 function App() {
   return (
     <div className="App">
+      <Header />
       <Routes>
         <Route path="/" element={<Main />}></Route>
         <Route path="/login" element={<Login />}></Route>

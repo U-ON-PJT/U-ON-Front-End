@@ -26,7 +26,6 @@ export const Main = () => {
 
   return (
     <div>
-      <Header />
       {/* 임시 버튼 */}
       <div className="px-5">
         <div className="flex">
