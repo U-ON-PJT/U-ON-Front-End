@@ -2,7 +2,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "contexts/Login";
 import { faBars, faSearch } from "@fortawesome/free-solid-svg-icons";
-import { faBell, faUser } from "@fortawesome/free-regular-svg-icons";
+import { faEnvelope, faUser } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const Header = () => {
@@ -17,7 +17,7 @@ export const Header = () => {
       </Link>
       <div className="space-x-4">
         <FontAwesomeIcon icon={faSearch} />
-        <FontAwesomeIcon icon={faBell} />
+        <FontAwesomeIcon icon={faEnvelope} />
         <FontAwesomeIcon icon={faUser} />
       </div>
     </nav>
