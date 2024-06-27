@@ -15,7 +15,7 @@ export const ToggleMypage = () => {
   const { logout } = useContext(UserContext);
 
   return (
-    <div className="flex-row border px-5 py-3 float-right bg-white shadow-md place-content-center">
+    <div className="absolute flex-row border px-5 py-3 right-0 bg-white shadow-md place-content-center">
       <div>
         {userInfo == null ? (
           <>
@@ -41,10 +41,10 @@ export const ToggleMypage = () => {
               <FontAwesomeIcon icon={faRightFromBracket} />
               <p>로그아웃</p>
             </Link>
-            <div className="flex py-2 space-x-3 mt-2">
+            <Link to="/mypage" className="flex py-2 space-x-3 mt-2">
               <FontAwesomeIcon icon={faPencil} />
               <p>내 정보 수정</p>
-            </div>
+            </Link>
           </>
         )}
       </div>

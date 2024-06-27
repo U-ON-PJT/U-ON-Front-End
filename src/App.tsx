@@ -14,6 +14,8 @@ import { BoardUpdate } from "pages/Board/update";
 import { MatchingDetail } from "pages/Matching/matchingDetail";
 import { MessageList } from "pages/Message/messageList";
 import { MessageDetail } from "pages/Message/messageDetail";
+import { Mypage } from "pages/Mypage";
+import { MessageWrite } from "pages/Message/messageWrite";
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
         <Route path="/" element={<Main />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/sign-up" element={<Signup />}></Route>
+        <Route path="/mypage" element={<Mypage />}></Route>
         <Route path="/board" element={<Board />}></Route>
         <Route path="/board/:boardId" element={<BoardDetail />}></Route>
         <Route path="/board/modify/:boardId" element={<BoardUpdate />}></Route>
@@ -30,6 +33,7 @@ function App() {
         <Route path="/matching" element={<MatchingDetail />}></Route>
         <Route path="/message" element={<MessageList />}></Route>
         <Route path="/message/:messageId" element={<MessageDetail />}></Route>
+        <Route path="/message/write" element={<MessageWrite />}></Route>
       </Routes>
     </div>
   );
