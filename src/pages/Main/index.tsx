@@ -28,23 +28,6 @@ export const Main = () => {
     <div>
       {/* 임시 버튼 */}
       <div className="px-5">
-        <div className="flex">
-          <div className="flex">
-            {userInfo == null ? (
-              <>
-                <Link to="/login">로그인</Link>
-                <Link to="/sign-up">회원가입</Link>
-              </>
-            ) : (
-              <>
-                <span>{userInfo.userId}님 안녕하세요</span>
-                <Link to="/" onClick={logout}>
-                  로그아웃
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
         <Card />
         <div className="text-left space-x-4 text-lg my-4">
           <button

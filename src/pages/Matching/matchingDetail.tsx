@@ -3,7 +3,12 @@ import axios from "axios";
 import { UserContext } from "contexts/Login";
 import { useNavigate } from "react-router-dom";
 import { Routes, Route, Link } from "react-router-dom";
-import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faLeaf,
+  faComments,
+  faTrophy,
+} from "@fortawesome/free-solid-svg-icons";
+import { faUserCircle } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 declare global {
@@ -47,6 +52,49 @@ export const MatchingDetail = () => {
           </button>
         </div>
         <div id="map" style={{ height: "150px" }} />
+        <div className="flex justify-between my-4 place-items-center">
+          <div className="bg-gray-100 rounded-xl px-4 py-3 space-y-3">
+            <div className="flex space-x-2">
+              <FontAwesomeIcon icon={faLeaf} />
+              <p className="font-semibold">유저 정보</p>
+            </div>
+            <div className="flex space-x-3 place-items-center">
+              <FontAwesomeIcon
+                icon={faUserCircle}
+                className="text-3xl text-gray-500"
+              />
+              <div className="text-left">
+                <p className="text-sm">비전 트레이닝 센터</p>
+                <p>김첨지</p>
+              </div>
+              <div className="text-main-color">
+                <FontAwesomeIcon icon={faComments} className="text-xl" />
+                <p className="text-sm">문의하기</p>
+              </div>
+            </div>
+          </div>
+          <div className="border rounded-xl border-gray-500 px-6 py-5 place-items-center space-y-2">
+            <p className="font-semibold">인원</p>
+            <p className="text-lg">2 / 6</p>
+          </div>
+        </div>
+        <div className="text-left">
+          <p className="my-5 text-lg font-semibold text-gray-500">
+            경험치 정보
+          </p>
+          <div className="flex place-content-center place-items-center space-x-5 border border-gray-500 rounded-lg px-5 py-4">
+            <div className="border border-gray-500 rounded-full px-5 py-4">
+              <FontAwesomeIcon
+                icon={faTrophy}
+                className="text-lg text-gray-500"
+              />
+            </div>
+            <div>
+              <p>참가자 전원 50p</p>
+              <p>승리팀 추가 20p</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
