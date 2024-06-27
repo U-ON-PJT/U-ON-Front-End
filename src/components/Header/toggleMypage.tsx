@@ -15,7 +15,7 @@ export const ToggleMypage = () => {
   const { logout } = useContext(UserContext);
 
   return (
-    <div className="flex-row border px-5 py-3 float-right bg-white place-content-center">
+    <div className="flex-row border px-5 py-3 float-right bg-white shadow-md place-content-center">
       <div>
         {userInfo == null ? (
           <>
