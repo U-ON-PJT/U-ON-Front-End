@@ -14,6 +14,7 @@ import { BoardUpdate } from "pages/Board/update";
 import { MatchingDetail } from "pages/Matching/matchingDetail";
 import { MessageList } from "pages/Message/messageList";
 import { MessageDetail } from "pages/Message/messageDetail";
+import { MessageWrite } from "pages/Message/messageWrite";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/matching" element={<MatchingDetail />}></Route>
         <Route path="/message" element={<MessageList />}></Route>
         <Route path="/message/:messageId" element={<MessageDetail />}></Route>
+        <Route path="/message/write" element={<MessageWrite />}></Route>
       </Routes>
     </div>
   );
