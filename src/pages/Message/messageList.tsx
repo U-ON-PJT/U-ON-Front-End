@@ -65,8 +65,11 @@ export const MessageList = () => {
 
     return (
         <div>
-            <button onClick={changeTypeReceiver}>수신함</button>
-            <button onClick={changeTypeSender}>송신함</button>
+            <div>
+                <button onClick={changeTypeReceiver}>수신함</button>
+                <button onClick={changeTypeSender}>송신함</button>
+                <Link to="/message/write" className="ml-10">쪽지 쓰기</Link>
+            </div>
             <ul className="flex justify-center">
                 {
                     type == 1 ?
@@ -97,7 +100,7 @@ export const MessageList = () => {
                 null
             }
             <br />
-            <Link to="/message/write">쪽지 쓰기</Link>
+            
         </div>
 
     )
