@@ -13,11 +13,11 @@ export const Header = () => {
     <nav className="flex justify-between px-5 py-4 mt-2">
       <FontAwesomeIcon icon={faBars} className="" />
       <Link to="/">
-        <img alt="logo" src="logo.png" width="25%" />
+        <img alt="logo" src="/logo.png" width="25%" />
       </Link>
       <div className="space-x-4">
         <FontAwesomeIcon icon={faSearch} />
-        <FontAwesomeIcon icon={faEnvelope} />
+        <Link to="/message"><FontAwesomeIcon icon={faEnvelope} /></Link>
         <FontAwesomeIcon icon={faUser} />
       </div>
     </nav>
