@@ -47,22 +47,30 @@ const UserContextProvider = ({ children }: Props) => {
         if (token) {
             try {
                 const decodeToken: any = jwtDecode(token);
-                const user: UserInfo = {
-                    userId: decodeToken.id,
-                    name: decodeToken.name,
-                    birth: decodeToken.birth,
-                    role: decodeToken.role,
-                    dongCode: decodeToken.dongCode,
-                    center: decodeToken.center,
-                    experience: decodeToken.experience,
-                    level: decodeToken.level,
-                    point: decodeToken.point,
-                };
-                setUserInfo(user);
+
+                const currentTime = Date.now() / 1000;
+                if (decodeToken.exp < currentTime) {
+                    setUserInfo(null);
+                    localStorage.clear();
+                }
+                else {
+                    const user: UserInfo = {
+                        userId: decodeToken.id,
+                        name: decodeToken.name,
+                        birth: decodeToken.birth,
+                        role: decodeToken.role,
+                        dongCode: decodeToken.dongCode,
+                        center: decodeToken.center,
+                        experience: decodeToken.experience,
+                        level: decodeToken.level,
+                        point: decodeToken.point,
+                    };
+                    setUserInfo(user);
+                }
             } catch (error) {
                 console.error("Invalid token:", error);
             }
-        }
+        } 
     }, []);
 
     const login = async (userId: string, password: string) => {
