@@ -32,7 +32,7 @@ export const Header = () => {
           </button>
         </div>
       </nav>
-      <div>{mypageOpen ? <ToggleMypage /> : ""}</div>
+      <div className="z-10">{mypageOpen ? <ToggleMypage /> : ""}</div>
     </div>
   );
 };
