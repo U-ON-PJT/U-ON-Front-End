@@ -46,7 +46,7 @@ function App() {
         <Route path="/FAQ" element={<FAQList />}></Route>
       </Routes>
       <Link to={"/FAQ"}>
-        <div className="bg-orange-300 py-5 px-7 shadow-lg rounded-full absolute right-5 bottom-5 z-10">
+        <div className="bg-orange-300 py-5 px-7 shadow-lg rounded-full fixed right-5 bottom-5 z-10">
           <FontAwesomeIcon icon={faQuestion} className="text-white" />
         </div>
       </Link>
