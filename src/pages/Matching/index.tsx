@@ -37,8 +37,15 @@ export const Matching = () => {
     "충청남도",
     "충청북도",
   ];
-
+  const { commonUrl } = useContext(UserContext);
+  const { userInfo } = useContext(UserContext);
   const [gugunList, setGugunList] = useState<{ gugunName: string }[]>([]);
+  const [matchList, setMatchList] = useState<any[]>([]);
+  // 카테고리 => type
+  // 0은 카테고리 없이 전체 호출
+  // 나머지는 select에 넣어있는 순서대로 1, 2, 3, 4, 5
+  const category = useRef<HTMLSelectElement>(null);
+  const gugun = useRef<HTMLSelectElement>(null);
 
   const user = {
     userId: useRef<HTMLInputElement>(null),
@@ -51,19 +58,93 @@ export const Matching = () => {
     center: useRef<HTMLInputElement>(null),
   };
 
-  const getGugun = async () => {
-    const url = "http://localhost:80/uon/locations/guguns";
+  const cDate = useRef<HTMLParagraphElement>(null);
+  const [parsingDate, setParsingDate] = useState("");
+  const [parsingDongCode, setParsingDongCode] = useState();
 
+  const formatDate = (dateString: any) => {
+    // 입력된 dateString에서 월과 일을 추출하기 위한 정규식
+    // 6월 30일 일요일 => 06-30, db에는 2024-06-30 이런식으로 저장되어 있음
+    const regex = /(\d{1,2})월 (\d{1,2})일/;
+    // 정규식을 이용하여 월과 일을 추출
+    const match = regex.exec(dateString);
+    
+    if (!match) {
+      throw new Error('Invalid date format'); 
+    }
+    
+    // 추출된 월과 일을 변수에 담기
+    const month = match[1].padStart(2, '0');
+    const day = match[2].padStart(2, '0');
+    
+    // 원하는 형식으로 조합하여 반환
+    return `${month}-${day}`;
+  };
+  
+  const getGugun = async () => {
+    const url = `${commonUrl}/locations/guguns`;
+    
     const { data } = await axios.get(url, {
       params: {
         sidoName: user.sidoName.current?.value,
       },
     });
-
+    
     console.log(data);
     setGugunList([]);
     setGugunList(data);
+
+    
   };
+
+  // 카테고리 혹은 구군 선택(수정) 시 매칭 정보 불러오기
+  const getMatchingList = async () => {
+    // 먼저 선택한 시도와 구군으로 동코드 불러오기
+    const dUrl = `${commonUrl}/locations/dongCodes`
+    const resp = await axios.get(dUrl, {
+      params: {
+        sidoName: user.sidoName.current?.value,
+        gugunName: gugun.current?.value
+      }
+    })
+    console.log("resp: ", resp.data);
+    setParsingDongCode(resp.data);
+    
+    console.log(resp.data);
+
+    // 카테고리, 날짜, 동코드(선택한 시도, 구군)로 매칭데이터 불러오기
+    const url = `${commonUrl}/activities/allSelect`;
+    const { data } = await axios.get(url, {
+      params: {
+        type: category.current?.value,
+        selectDate: '2024-' + parsingDate,
+        parsingDongCode: resp.data
+      }
+    }
+    );
+    setMatchList(data);
+    console.log(data);
+  }
+
+  // 맨 처음 화면 렌더링 시 매칭 데이터를 불러오기 위함
+  // 기준은 회원가입 시 설정한 주소(동코드)
+  const getFirstList = async () => {
+    const url = `${commonUrl}/activities/allSelect`;
+    const today = new Date();
+    const month = (today.getMonth() + 1) < 10 ? `0${today.getMonth() + 1}` : `${today.getMonth() + 1}`;
+    const day = today.getDate();
+    console.log("dongcode: ", userInfo?.dongCode.substring(0, 5));
+    const { data } = await axios.get(url, {
+      params: {
+        type: 0,
+        selectDate: `2024-${month}-${day}`,
+        parsingDongCode: userInfo?.dongCode.substring(0, 5)
+      }
+    }
+    );
+    setMatchList(data);
+    console.log("firstList", data);
+  }
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -71,19 +152,31 @@ export const Matching = () => {
     setActiveTab((id + 1) % 2);
   };
 
+  // 시도 구군 매칭에 관한 데이터를 여기서 얻었기 때문에
+  // props로 뿌림
   const tabs = [
-    { id: 0, title: "지도로 보기", component: <MatchingList /> },
-    { id: 1, title: "목록으로 보기", component: <MatchingMap /> },
+    { id: 0, title: "지도로 보기", component: <MatchingList matchList={matchList} sidoName={user.sidoName.current?.value as string} gugunName={gugun.current?.value as string} /> },
+    { id: 1, title: "목록으로 보기", component: <MatchingMap matchList={matchList} sidoName={user.sidoName.current?.value as string} gugunName={gugun.current?.value as string} /> },
   ];
 
   const ActiveComponent = tabs.find((tab) => tab.id === activeTab)?.component;
   const ActiveTile = tabs.find((tab) => tab.id === activeTab)?.title.toString();
 
+  useEffect(() => {
+    if (userInfo) {
+      getFirstList();
+    }
+  }, [userInfo])
+
+  useEffect(() => {
+    setParsingDate(formatDate(cDate.current?.textContent));
+  }, [cDate])
+
   return (
     <div className="">
       <div className="px-5 flex justify-between mb-5">
         <FontAwesomeIcon icon={faAngleLeft} className="mt-1" />
-        <p className="text-lg">6월 26일 수요일</p>
+        <p className="text-lg" ref={cDate}>6월 30일 일요일</p>
         <FontAwesomeIcon icon={faAngleRight} className="mt-1" />
       </div>
       <div className="flex space-x-3 mb-3 overflow-y-auto">
@@ -98,12 +191,14 @@ export const Matching = () => {
           required
           name="sidoName"
           className="border border-gray-500 rounded-full px-3 py-2"
+          ref={category}
+          onChange={getMatchingList}
         >
-          <option hidden selected disabled value="">
+          <option hidden selected disabled value="0">
             카테고리
           </option>
-          {hobbyList.map((hobby) => (
-            <option key={hobby} value={hobby}>
+          {hobbyList.map((hobby, index) => (
+            <option key={hobby} value={index+1}>
               {hobby}
             </option>
           ))}
@@ -127,8 +222,9 @@ export const Matching = () => {
         <select
           required
           name="gugunName"
-          ref={user.gugunName}
+          ref={gugun}
           className="border border-gray-500 rounded-full px-3 py-2"
+          onChange={getMatchingList}
         >
           <option hidden selected disabled value="">
             구군 선택

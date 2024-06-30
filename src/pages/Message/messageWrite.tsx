@@ -15,7 +15,7 @@ export const MessageWrite = () => {
   const { userInfo } = useContext(UserContext);
   const { commonUrl } = useContext(UserContext);
   const navigate = useNavigate();
-  const [receiverId, setReceiverId] = useState("user1");
+  const [receiverId, setReceiverId] = useState("user3");
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -29,7 +29,7 @@ export const MessageWrite = () => {
     setTitle(value);
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (window.confirm("보내시겠습니까?")) {
       const token = localStorage.getItem("token");
       if (receiverId != "") {
@@ -37,7 +37,7 @@ export const MessageWrite = () => {
           const url = `${commonUrl}/messages`;
           console.log(receiverId);
           try {
-            axios.post(
+            await axios.post(
               url,
               {
                 receiverId: receiverId,
@@ -51,7 +51,14 @@ export const MessageWrite = () => {
               }
             );
             navigate("/message");
-          } catch (error) {}
+          } catch (error) {
+            if (axios.isAxiosError(error)) {
+              if (error.response?.status == 400) {
+                alert("아이디가 존재하지 않습니다.");
+              }
+              
+            }
+          }
         }
       } else {
         alert("받는 사람 아이디가 존재하지 않습니다.");
