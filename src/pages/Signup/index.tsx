@@ -6,7 +6,7 @@ import { Header } from "components/Header";
 
 export const Signup = () => {
   const navigate = useNavigate();
-
+  const { commonUrl } = useContext(UserContext);
   const user = {
     userId: useRef<HTMLInputElement>(null),
     password: useRef<HTMLInputElement>(null),
@@ -50,7 +50,7 @@ export const Signup = () => {
       alert("ID 중복체크를 해주세요.");
     } else {
       try {
-        const url = "http://localhost:80/uon/users/sign-up";
+        const url = `${commonUrl}/users/sign-up`;
         await axios.post(url, {
           userId: user.userId.current?.value,
           password: user.password.current?.value,
@@ -75,7 +75,7 @@ export const Signup = () => {
       alert("아이디를 입력해주세요");
       return;
     }
-    const url = "http://localhost:80/uon/users/exist/" + userId;
+    const url = `${commonUrl}/users/exist/${userId}`;
 
     try {
       await axios.get(url);
@@ -94,7 +94,7 @@ export const Signup = () => {
   };
 
   const getGugun = async () => {
-    const url = "http://localhost:80/uon/locations/guguns";
+    const url = `${commonUrl}/locations/guguns`;
 
     const { data } = await axios.get(url, {
       params: {
