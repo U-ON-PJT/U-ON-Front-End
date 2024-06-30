@@ -69,7 +69,8 @@ export const Signup = () => {
     }
   };
 
-  const checkDuplication = async () => {
+  const checkDuplication = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
     const userId = user.userId.current?.value;
     if (userId == "") {
       alert("아이디를 입력해주세요");
