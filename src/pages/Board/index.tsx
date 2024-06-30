@@ -76,16 +76,23 @@ export const Board = () => {
           교육
         </button>
       </div>
-      <ul>
-        {boardList.map((board) => (
-          <li key={board.boardId}>
-            <Link to={`/board/${board.boardId}`}>{board.title}</Link>
-          </li>
-        ))}
-      </ul>
       {userInfo != null && userInfo.role == "1" ? (
-        <Link to="/board/write">글쓰기</Link>
+        <Link to="/board/write">
+          <p className="text-right text-gray-500 underline px-5 mt-3">글쓰기</p>
+        </Link>
       ) : null}
+      <div className="mt-5 px-5">
+        {boardList.map((board, index) => (
+          <div
+            key={board.boardId}
+            className={`flex text-left space-x-5 px-5 py-3 ${
+              index % 2 === 0 ? "bg-gray-100" : ""
+            }`}
+          >
+            <Link to={`/board/${board.boardId}`}>{board.title}</Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
