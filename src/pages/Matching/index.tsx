@@ -14,13 +14,7 @@ import { MatchingList } from "./matchingList";
 import { MatchingMap } from "./matchingMap";
 
 export const Matching = () => {
-  const hobbyList = [
-    "스포츠",
-    "학습 및 연구",
-    "야외 활동",
-    "예술 및 공예",
-    "기타",
-  ];
+  const hobbyList = ["스포츠", "학습, 연구", "야외 활동", "예술, 공예", "기타"];
 
   const sidoList = [
     "강원도",
