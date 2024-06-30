@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, useContext } from "react"
 import { UserContext } from "contexts/Login";
+
 import axios from "axios";
+
 
 declare global {
     interface Window {
@@ -23,7 +25,20 @@ export const MatchingWrite = () => {
 
     let ps = new window.kakao.maps.services.Places();
 
-    let infowindow = new window.kakao.maps.InfoWindow({ zIndex: 1});
+    let infowindow = new window.kakao.maps.InfoWindow({ zIndex: 1 });
+    
+    const matching = {
+        title: useRef<HTMLInputElement>(null),
+        content: useRef<HTMLInputElement>(null),
+        activity_address: useRef<HTMLInputElement>(null),
+        activity_date: useRef<HTMLInputElement>(null),
+        min_participant: useRef<HTMLInputElement>(null),
+        max_participant: useRef<HTMLInputElement>(null),
+        type: useRef<HTMLSelectElement>(null)
+    }
+
+    const writeMatching = async () => {
+    }
     
     const searchPlaces = () => {
         if (!keyWord.current?.value.replace(/^\s+|\s+$/g, '')) {
@@ -43,6 +58,9 @@ export const MatchingWrite = () => {
             setSearchResults(data);
             setIsModalOpen(true);
         }
+    }
+    const closeModal = () => {
+        setIsModalOpen(false);
     }
 
     const getDongCode = async () => {
@@ -82,9 +100,11 @@ export const MatchingWrite = () => {
 
     return (
         <div>
-            <input type="text" ref={keyWord} />
+            <input className="border" type="text" ref={keyWord} />
             <button onClick={searchPlaces}>검색</button>
             <div id="map" style={{ width: "350px", height: "350px" }} />;
+        
+           
         </div>
     )
 }

@@ -18,6 +18,8 @@ export const MatchingList: React.FC<Props> = ({ matchList, gugunName, sidoName }
   
   return (
     <div className="">
+      {/* 렌더링 될 때 바로 데이터가 가져와지지 않기 때문에
+      이런식으로 사용 */}
       {matchList.length > 0 ? 
         <div>{matchList[0].activityId}</div> :
         null
