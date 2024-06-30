@@ -24,7 +24,7 @@ interface Context {
 
 // 초기 Context 값 설정
 const initialContext: Context = {
-    commonUrl: "http://localhost:80/uon/",
+    commonUrl: "http://172.30.1.58:80/uon/",
     userInfo: null,
     login: () => {},
     logout: () => {},
@@ -40,7 +40,7 @@ interface Props {
 const UserContextProvider = ({ children }: Props) => {
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
-    const [commonUrl, setCommonUrl] = useState<string>("http://localhost:80/uon/");
+    const [commonUrl, setCommonUrl] = useState<string>("http://172.30.1.58:80/uon/");
 
     useEffect(() => {
         const token = localStorage.getItem("token");

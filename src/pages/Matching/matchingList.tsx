@@ -6,9 +6,22 @@ import { Routes, Route, Link } from "react-router-dom";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export const MatchingList = () => {
+interface Props {
+  matchList: any[];
+  sidoName: string;
+  gugunName: string;
+}
+
+export const MatchingList: React.FC<Props> = ({ matchList, gugunName, sidoName }) => {
+  const { userInfo } = useContext(UserContext);
+
+  
   return (
     <div className="">
+      {matchList.length > 0 ? 
+        <div>{matchList[0].activityId}</div> :
+        null
+      }
       <div className="flex justify-between align-middle border-b border-gray-500 py-4">
         <p className="font-semibold">17:00</p>
         <p className="text-main-color font-semibold">풋살</p>

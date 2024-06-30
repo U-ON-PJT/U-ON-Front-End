@@ -28,12 +28,11 @@ export const MessageDetail = () => {
                 }
             }
         );
-
         setMessage(data);
-        if (userInfo?.userId == message.receiverId) {
-            setType("0");
+        if (userInfo?.userId == data.receiverId) {
+            setType("1");
         }
-        else setType("1");
+        else setType("0");
     }
 
     const deleteMessage = async () => {
@@ -42,15 +41,19 @@ export const MessageDetail = () => {
             const token = localStorage.getItem("token");
             // 수신함에 들어있는 쪽지이고 수신자와 로그인한 회원이 일치하거나
             // 송신함에 들어있는 쪽지인데 송신자와 로그인한 회원이 일치하는 경우
-            if ((type === "0" && userInfo?.userId === message.receiverId)
-                || (type === "1" && userInfo?.userId === message.senderId)) {
+            console.log(type);
+            if ((type == "0" && userInfo?.userId == message.senderId)
+                || (type == "1" && userInfo?.userId == message.receiverId)) {
                 try {
-                    await axios.delete(url, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    })
+                
+                const resp = await axios.delete(url, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                console.log("Delete resp:", resp);
                     alert("삭제했습니다.");
+
                     navigate("/message");
                 } catch (error) {
                     alert("삭제 실패");
@@ -71,7 +74,7 @@ export const MessageDetail = () => {
 
     useEffect(() => {
         getMessage();
-    }, [messageId])
+    }, [])
     
     return (
         <div>

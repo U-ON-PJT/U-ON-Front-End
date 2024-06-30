@@ -1,7 +1,7 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "contexts/Login";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Routes, Route, Link } from "react-router-dom";
 import {
   faLeaf,
@@ -17,8 +17,30 @@ declare global {
   }
 }
 
+interface matchInfo{
+  
+}
+
 export const MatchingDetail = () => {
+  const [matching, setMatching] = useState(null);
+  const { commonUrl } = useContext(UserContext);
+  const { activityId } = useParams();
+  const getMatching = async () => {
+    console.log(activityId);
+    const url = `${commonUrl}/activities/detail/${activityId}`;
+    const { data } = await axios.get(url);
+
+    console.log(data);
+
+    const regex = /[^\u3131-\u3163\uac00-\ud7a3\s-]+/g;
+    const koreanPart = data.activityAddress.replace(regex, '').replace(/-/g, '');
+    const koreanPart2 = "제주특별자치도 제주시 추자면 신양리 21-1".replace(regex, '').replace(/-/g, '');
+    console.log(koreanPart);
+    console.log(koreanPart2);
+  }
+
   useEffect(() => {
+    getMatching();
     let container = document.getElementById(`map`); // 지도를 담을 영역의 DOM 레퍼런스
     let options = {
       center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도 중심 좌표
