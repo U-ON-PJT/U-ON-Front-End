@@ -19,7 +19,7 @@ export const Login = () => {
     if (userId && password) {
       login(userId, password);
     }
-    navigate("/");
+    // navigate("/");
   };
 
   return (

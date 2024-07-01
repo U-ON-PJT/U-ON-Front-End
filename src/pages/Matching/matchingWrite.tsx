@@ -4,6 +4,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Modal from "components/Modal";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 declare global {
   interface Window {
@@ -27,6 +28,7 @@ export const MatchingWrite = () => {
     gotoPage: (page: number) => {}, // 실제 구현 시에는 페이지 이동 로직을 추가해야 합니다
   });
   const [activityPlace, setActivityPlace] = useState<any>("");
+  const navigate = useNavigate();
 
   const { userInfo } = useContext(UserContext);
   const { commonUrl } = useContext(UserContext);
@@ -81,6 +83,7 @@ export const MatchingWrite = () => {
        }
      });
     console.log(response.data);
+    navigate("/");
   };
 
   const searchPlaces = () => {

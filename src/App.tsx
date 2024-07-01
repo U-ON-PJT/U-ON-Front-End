@@ -20,6 +20,7 @@ import { MessageWrite } from "pages/Message/messageWrite";
 import { FAQList } from "pages/FAQ";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Password } from "pages/Mypage/password";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/sign-up" element={<Signup />}></Route>
         <Route path="/mypage" element={<Mypage />}></Route>
+        <Route path="/password" element={<Password />}></Route>
         <Route path="/board" element={<Board />}></Route>
         <Route path="/board/:boardId" element={<BoardDetail />}></Route>
         <Route path="/board/modify/:boardId" element={<BoardUpdate />}></Route>
