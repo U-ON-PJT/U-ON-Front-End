@@ -3,15 +3,16 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 interface UserInfo {
-  userId: string;
-  name: string;
-  birth: string;
-  role: string;
-  dongCode: string;
-  center: string;
-  experience: string;
-  level: string;
-  point: string;
+    userId: string,
+    name: string,
+    birth: string,
+    role: string,
+    dongCode: string,
+    center: string,
+    experience: string,
+    level: string,
+    point: string,
+    phone: string
 }
 
 interface Context {
@@ -64,6 +65,7 @@ const UserContextProvider = ({ children }: Props) => {
             experience: decodeToken.experience,
             level: decodeToken.level,
             point: decodeToken.point,
+            phone: decodeToken.phone
           };
           setUserInfo(user);
         }
@@ -94,6 +96,7 @@ const UserContextProvider = ({ children }: Props) => {
         experience: decodeToken.experience,
         level: decodeToken.level,
         point: decodeToken.point,
+        phone: decodeToken.phone
       };
       setUserInfo(user);
     }

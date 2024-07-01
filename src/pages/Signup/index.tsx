@@ -50,7 +50,8 @@ export const Signup = () => {
       alert("ID 중복체크를 해주세요.");
     } else {
       try {
-        const url = `${commonUrl}/users/sign-up`;
+        const url = `${commonUrl}users/sign-up`;
+        console.log(url);
         await axios.post(url, {
           userId: user.userId.current?.value,
           password: user.password.current?.value,

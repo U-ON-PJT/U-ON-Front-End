@@ -39,11 +39,15 @@ export const Matching = () => {
   const { userInfo } = useContext(UserContext);
   const [gugunList, setGugunList] = useState<{ gugunName: string }[]>([]);
   const [matchList, setMatchList] = useState<any[]>([]);
+  const [userSidoName, setUserSidoName] = useState(""); 
+  const [userGugunName, setUserGugunName] = useState(""); 
+
   // 카테고리 => type
   // 0은 카테고리 없이 전체 호출
   // 나머지는 select에 넣어있는 순서대로 1, 2, 3, 4, 5
   const category = useRef<HTMLSelectElement>(null);
   const gugun = useRef<HTMLSelectElement>(null);
+  const [order, setOrder] = useState(1);
 
   const user = {
     userId: useRef<HTMLInputElement>(null),
@@ -59,7 +63,9 @@ export const Matching = () => {
   const cDate = useRef<HTMLParagraphElement>(null);
   const [parsingDate, setParsingDate] = useState("");
   const [parsingDongCode, setParsingDongCode] = useState();
-
+  const [today, setToday] = useState(new Date());
+  // const today = new Date();
+  const weekday = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
   const formatDate = (dateString: any) => {
     // 입력된 dateString에서 월과 일을 추출하기 위한 정규식
     // 6월 30일 일요일 => 06-30, db에는 2024-06-30 이런식으로 저장되어 있음
@@ -93,6 +99,14 @@ export const Matching = () => {
     setGugunList(data);
   };
 
+  const getLocation = async () => {
+    const url = `${commonUrl}/locations/names/${userInfo?.dongCode}`;
+    const { data } = await axios.get(url);
+    setUserSidoName(data.sidoName);
+    setUserGugunName(data.gugunName);
+    console.log("getLocation", data.sidoName)
+  }
+
   // 카테고리 혹은 구군 선택(수정) 시 매칭 정보 불러오기
   const getMatchingList = async () => {
     // 먼저 선택한 시도와 구군으로 동코드 불러오기
@@ -105,38 +119,47 @@ export const Matching = () => {
     });
     console.log("resp: ", resp.data);
     setParsingDongCode(resp.data);
-
+    console.log(parsingDate)
     console.log(resp.data);
+    console.log(today);
 
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    const formattedDate = `${month}-${day}`;
     // 카테고리, 날짜, 동코드(선택한 시도, 구군)로 매칭데이터 불러오기
     const url = `${commonUrl}/activities/allSelect`;
     const { data } = await axios.get(url, {
       params: {
         type: category.current?.value,
-        selectDate: "2024-" + parsingDate,
+        selectDate: "2024-" + formattedDate,
         parsingDongCode: resp.data,
+        algo: order
       },
     });
     setMatchList(data);
-    console.log(data);
   };
 
   // 맨 처음 화면 렌더링 시 매칭 데이터를 불러오기 위함
   // 기준은 회원가입 시 설정한 주소(동코드)
   const getFirstList = async () => {
     const url = `${commonUrl}/activities/allSelect`;
-    const today = new Date();
+    // const today = new Date();
     const month =
       today.getMonth() + 1 < 10
         ? `0${today.getMonth() + 1}`
         : `${today.getMonth() + 1}`;
     const day = today.getDate();
+    const formmatedDay = day.toString().padStart(2, '0');
+
     console.log("dongcode: ", userInfo?.dongCode.substring(0, 5));
+    console.log(month);
+    console.log(formmatedDay);
     const { data } = await axios.get(url, {
       params: {
         type: 0,
-        selectDate: `2024-${month}-${day}`,
+        selectDate: `2024-${month}-${formmatedDay}`,
         parsingDongCode: userInfo?.dongCode.substring(0, 5),
+        algo: order
       },
     });
     setMatchList(data);
@@ -179,24 +202,68 @@ export const Matching = () => {
   const ActiveComponent = tabs.find((tab) => tab.id === activeTab)?.component;
   const ActiveTile = tabs.find((tab) => tab.id === activeTab)?.title.toString();
 
-  useEffect(() => {
-    if (userInfo) {
-      getFirstList();
-    }
-  }, [userInfo]);
+  const prevDate = () => {
+    const prevDay = new Date(today);
+    prevDay.setDate(prevDay.getDate() - 1);
+    setToday(prevDay);
+  };
+
+  const nextDate = () => {
+    const nextDay = new Date(today);
+    nextDay.setDate(nextDay.getDate() + 1);
+    setToday(nextDay);
+  };
+
+  const orderZero = () => {
+    setOrder(0);
+    // getMatchingList();
+  }
+  const orderOne = () => {
+    setOrder(1);
+    // getMatchingList();
+  }
 
   useEffect(() => {
-    setParsingDate(formatDate(cDate.current?.textContent));
+    getLocation();
+  }, []);
+
+  useEffect(() => {
+    if (userSidoName && user.sidoName.current) {
+      user.sidoName.current.value = userSidoName;
+      getGugun(); // 시도 선택에 따른 구군 리스트 불러오기
+    }
+  }, [userSidoName]);
+  
+  useEffect(() => {
+    getMatchingList();
+  }, [today])
+
+  useEffect(() => {
+    getMatchingList();
+  }, [order])
+  
+  // useEffect(() => {
+  //   if (userInfo) {
+  //     getFirstList();
+  //   }
+  // }, [userInfo]);
+  
+  useEffect(() => {
+    if (cDate.current) {
+      setParsingDate(formatDate(cDate.current.textContent));
+    }
   }, [cDate]);
+
+  
 
   return (
     <div className="">
       <div className="px-5 flex justify-between mb-5">
-        <FontAwesomeIcon icon={faAngleLeft} className="mt-1" />
+        <FontAwesomeIcon onClick={prevDate} icon={faAngleLeft} className="mt-1" />
         <p className="text-lg" ref={cDate}>
-          6월 30일 일요일
+          {today.getMonth()+1}월 {today.getDate()}일 {weekday[today.getDay()]}
         </p>
-        <FontAwesomeIcon icon={faAngleRight} className="mt-1" />
+        <FontAwesomeIcon onClick={nextDate} icon={faAngleRight} className="mt-1" />
       </div>
       <div className="flex space-x-3 mb-3 overflow-y-auto">
         <style>
@@ -228,6 +295,7 @@ export const Matching = () => {
           ref={user.sidoName}
           onChange={getGugun}
           className="border border-gray-500 rounded-full px-3 py-2"
+          defaultValue={userSidoName}
         >
           <option hidden selected disabled value="">
             시도 선택
@@ -237,7 +305,7 @@ export const Matching = () => {
               {sido}
             </option>
           ))}
-        </select>
+          </select>
         <select
           required
           name="gugunName"
@@ -268,8 +336,8 @@ export const Matching = () => {
           )}
         </div>
         <div className="flex space-x-2">
-          <p className="text-gray-500">마감일 순</p>
-          <p className="text-gray-500">최신 순</p>
+          <button onClick={orderZero}><p className="text-gray-500">마감일 순</p></button>
+          <button onClick={orderOne}><p className="text-gray-500">최신 순</p></button>
         </div>
       </div>
       <div>{ActiveComponent}</div>

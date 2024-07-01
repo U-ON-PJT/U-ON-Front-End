@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { UserContext } from "contexts/Login";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import Modal from "components/Modal";
 import axios from "axios";
 
 declare global {
@@ -11,11 +11,22 @@ declare global {
   }
 }
 
+interface Pagination {
+  last: number;
+  current: number;
+  gotoPage: (page: number) => void;
+}
+
 export const MatchingWrite = () => {
   const keyWord = useRef<HTMLInputElement>(null);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [map, setMap] = useState<any>(null);
+  const [pagination, setPagination] = useState<Pagination>({
+    last: 10, // 예시에서는 임의의 값으로 설정
+    current: 1, // 예시에서는 첫 번째 페이지로 설정
+    gotoPage: (page: number) => {}, // 실제 구현 시에는 페이지 이동 로직을 추가해야 합니다
+  });
+  const [activityPlace, setActivityPlace] = useState<any>("");
 
   const { userInfo } = useContext(UserContext);
   const { commonUrl } = useContext(UserContext);
@@ -29,7 +40,7 @@ export const MatchingWrite = () => {
 
   const matching = {
     title: useRef<HTMLInputElement>(null),
-    content: useRef<HTMLInputElement>(null),
+    content: useRef<HTMLTextAreaElement>(null),
     activity_address: useRef<HTMLInputElement>(null),
     activity_date: useRef<HTMLInputElement>(null),
     min_participant: useRef<HTMLInputElement>(null),
@@ -37,7 +48,40 @@ export const MatchingWrite = () => {
     type: useRef<HTMLSelectElement>(null),
   };
 
-  const writeMatching = async () => {};
+  const writeMatching = async () => {
+    const token = localStorage.getItem("token");
+    
+    const regex = /[^\u3131-\u3163\uac00-\ud7a3\s-]+/g;
+    const parsingPlace = activityPlace.replace(regex, '').replace(/-/g, '');
+    console.log(parsingPlace);
+    const result = parsingPlace.split(' ').slice(1).join(' ');
+    const dUrl = `${commonUrl}/locations/codes/${result}`;
+
+     // Fetch dong code
+    const { data } = await axios.get(dUrl);
+    console.log(data);
+
+     // Prepare activity data
+     const url = `${commonUrl}/activities`;
+     const activity = {
+       title: matching.title.current?.value,
+       content: matching.content.current?.value,
+       activityAddress: activityPlace,
+       activityDate: matching.activity_date.current?.value,
+       minParticipant: matching.min_participant.current?.value,
+       maxParticipant: matching.max_participant.current?.value,
+       type: matching.type.current?.value,
+       dongCode: data,
+     };
+
+     // Send POST request
+     const response = await axios.post(url, activity, {
+       headers: {
+         Authorization: `Bearer ${token}`
+       }
+     });
+    console.log(response.data);
+  };
 
   const searchPlaces = () => {
     if (!keyWord.current?.value.replace(/^\s+|\s+$/g, "")) {
@@ -55,6 +99,7 @@ export const MatchingWrite = () => {
       console.log(data);
       setSearchResults(data);
       setIsModalOpen(true);
+      setPagination({ ...pagination });
     }
   };
   const closeModal = () => {
@@ -70,6 +115,14 @@ export const MatchingWrite = () => {
     setGugunName(data.gugunName);
   };
 
+  const selectedPlace = (place: any) => {
+    console.log("place: ", place);
+    setActivityPlace(place.address_name);
+    if (keyWord.current) {
+      keyWord.current.value = place.place_name;
+    }
+  }
+
   useEffect(() => {
     if (userInfo) {
       getDongCode();
@@ -83,14 +136,15 @@ export const MatchingWrite = () => {
         `${sidoName} ${gugunName}`,
         function (result: any, status: any) {
           if (status === window.kakao.maps.services.Status.OK) {
-            let container = document.getElementById("map");
-            let coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
-            let options = {
-              center: coords,
-              level: 3,
-            };
-            let newMap = new window.kakao.maps.Map(container, options);
-            setMap(newMap);
+            // let container = document.getElementById("map");
+            // let coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+            // let options = {
+            //   center: coords,
+            //   level: 3,
+            // };
+            // // let newMap = new window.kakao.maps.Map(container, options);
+            // // setMap(newMap);
+            // let map = new window.kakao.maps.Map(container, options);
           }
         }
       );
@@ -114,6 +168,7 @@ export const MatchingWrite = () => {
               className="border border-gray-500 rounded-lg px-5 py-2 mb-3 w-full"
               type="text"
               name="title"
+              ref={matching.title}
             />
           </div>
           <div>
@@ -125,6 +180,7 @@ export const MatchingWrite = () => {
               required
               name="category"
               className="border border-gray-500 rounded-lg px-3 py-2"
+              ref={matching.type}
             >
               <option hidden selected disabled value="0">
                 유형
@@ -146,16 +202,29 @@ export const MatchingWrite = () => {
               className="border border-gray-500 rounded-lg px-5 py-2 mb-3 w-full"
               type="datetime-local"
               name="title"
+              ref={matching.activity_date}
             />
           </div>
           <div>
             <label htmlFor="title" className="text-sm text-gray-500">
-              참여 인원 *
+              최소 인원 *
             </label>
             <input
               className="border border-gray-500 rounded-lg px-5 py-2 mb-3 w-full"
               type="text"
               name="title"
+              ref={matching.min_participant}
+            />
+          </div>
+          <div>
+            <label htmlFor="title" className="text-sm text-gray-500">
+              최대 인원 *
+            </label>
+            <input
+              className="border border-gray-500 rounded-lg px-5 py-2 mb-3 w-full"
+              type="text"
+              name="title"
+              ref={matching.max_participant}
             />
           </div>
         </div>
@@ -181,15 +250,18 @@ export const MatchingWrite = () => {
           <label htmlFor="title" className="text-sm text-gray-500">
             내용 *
           </label>
-          <textarea className="space-x-5 border border-gray-500 rounded-lg px-5 py-5 h-52 w-full"></textarea>
+          <textarea ref={matching.content} className="space-x-5 border border-gray-500 rounded-lg px-5 py-5 h-52 w-full"></textarea>
         </div>
       </div>
       <button
         id="sendButton"
         className="bg-main-color text-white font-semibold px-6 py-3 mt-3 rounded-md shadow-lg"
+        onClick={writeMatching}
       >
         등록하기
       </button>
+      {/* <div id="map" style={{ width: "350px", height: "350px" }} />; */}
+      {isModalOpen && <Modal closeModal={closeModal} searchResults={searchResults} selectedPlace={selectedPlace} pagination={pagination}/>}
     </div>
   );
 };

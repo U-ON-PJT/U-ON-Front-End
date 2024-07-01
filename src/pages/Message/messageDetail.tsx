@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { UserContext } from "contexts/Login";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -121,12 +121,14 @@ export const MessageDetail = () => {
               {message.content}
             </div>
           </div>
+          <Link to={`/message/write/${message.receiverId}`}>
           <button
             id="sendButton"
             className="bg-main-color text-white font-semibold px-6 py-3 mt-3 rounded-md shadow-lg"
           >
             답장하기
-          </button>
+            </button>
+          </Link>
         </div>
       ) : null}
     </div>

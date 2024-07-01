@@ -103,7 +103,7 @@ export const BoardUpdate = () => {
       // 유저 정보와 토큰이 존재하고, 유저 정보와 글쓴 사람의 정보가 맞으면 수행
       if (userInfo != null && token && userInfo.userId == board.userId) {
         const url = `${commonUrl}/boards`;
-        axios.put(
+        await axios.put(
           url,
           {
             board: {
