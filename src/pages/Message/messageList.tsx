@@ -3,6 +3,8 @@ import { useState, useContext, useEffect } from "react";
 import { UserContext } from "contexts/Login";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { faCircleLeft, faCircleRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface Message {
   messageId: number;
@@ -16,9 +18,7 @@ interface Message {
 
 export const MessageList = () => {
   const { commonUrl } = useContext(UserContext);
-
-  const [type, setType] = useState(1);
-
+  const { userInfo } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [messageList, setMessageList] = useState<Message[]>([]);
@@ -27,7 +27,7 @@ export const MessageList = () => {
     const token = localStorage.getItem("token");
 
     if (token) {
-      const url = `${commonUrl}/messages/${type}`;
+      const url = `${commonUrl}/messages/0`;
 
       const { data } = await axios.get(url, {
         headers: {
@@ -43,48 +43,65 @@ export const MessageList = () => {
     }
   };
 
-  const changeTypeReceiver = () => {
-    setType(1);
-  };
-
-  const changeTypeSender = () => {
-    setType(0);
-  };
-
   useEffect(() => {
     getMessageList();
-  }, [type]);
+  }, []);
 
   return (
-    <div>
-      <div>
-        <button onClick={changeTypeReceiver}>수신함</button>
-        <button onClick={changeTypeSender}>송신함</button>
-        <Link to="/message/write" className="ml-10">
-          쪽지 쓰기
-        </Link>
+    <div className="px-5 mb-10">
+      <h1 className="mt-5 mb-5 text-left text-lg font-semibold">쪽지함</h1>
+      <div className="space-y-5">
+        {messageList.length > 0
+          ? messageList.map((message) => (
+              <Link to={`/message/${message.messageId}`}>
+                <div
+                  className={
+                    "flex space-x-3 px-3 py-2 my-1 " +
+                    (message.senderId === userInfo?.userId ? "bg-gray-100" : "")
+                  }
+                >
+                  {message.senderId === userInfo?.userId ? (
+                    <div className="text-center w-8">
+                      <FontAwesomeIcon
+                        icon={faCircleRight}
+                        className="text-xl"
+                      />
+                      <p className="text-sm">발신</p>
+                    </div>
+                  ) : (
+                    <div className="text-center w-8 text-main-color">
+                      <FontAwesomeIcon
+                        icon={faCircleLeft}
+                        className="text-xl"
+                      />
+                      <p className="text-sm">수신</p>
+                    </div>
+                  )}
+                  <div className="text-left w-full">
+                    {message.senderId === userInfo?.userId ? (
+                      <div className="flex justify-between">
+                        <div className="space-x-3">
+                          <span>받는 사람</span>
+                          <span>{message.receiverId}</span>
+                        </div>
+                        <span>{message.sendTime}</span>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between">
+                        <div className="space-x-3">
+                          <span className="text-main-color">보낸 사람</span>
+                          <span>{message.senderId}</span>
+                        </div>
+                        <span>{message.sendTime}</span>
+                      </div>
+                    )}
+                    <p className="text-lg font-semibold">{message.title}</p>
+                  </div>
+                </div>
+              </Link>
+            ))
+          : null}
       </div>
-      <ul className="flex justify-center">
-        {type === 1 ? <li>보낸 사람</li> : <li>받은 사람</li>}
-        <li>제목</li>
-        <li>날짜</li>
-      </ul>
-      {messageList.length > 0
-        ? messageList.map((message) => (
-            <Link to={`/message/${message.messageId}`}>
-              <ul className="flex justify-center" key={message.messageId}>
-                {type === 1 ? (
-                  <li>{message.senderId}</li>
-                ) : (
-                  <li>{message.receiverId}</li>
-                )}
-                <li>{message.title}</li>
-                <li>{message.sendTime}</li>
-              </ul>
-            </Link>
-          ))
-        : null}
-      <br />
     </div>
   );
 };
