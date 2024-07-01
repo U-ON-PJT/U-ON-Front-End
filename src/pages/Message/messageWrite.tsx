@@ -1,7 +1,7 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "contexts/Login";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Routes, Route, Link } from "react-router-dom";
 import {
   faLeaf,
@@ -15,32 +15,45 @@ export const MessageWrite = () => {
   const { userInfo } = useContext(UserContext);
   const { commonUrl } = useContext(UserContext);
   const navigate = useNavigate();
-  const [receiverId, setReceiverId] = useState("user3");
-
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const { userId } = useParams();
+  const [leader, setLeader] = useState<any>(null);
 
   const changeContent = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = event.target;
     setContent(value);
   };
+
   const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setTitle(value);
   };
 
+  const getUserInfo = async () => {
+    const url = `${commonUrl}/users/others/${userId}`;
+    const token = localStorage.getItem("token");
+    const { data } = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setLeader(data);
+    console.log(data);
+  };
+
   const sendMessage = async () => {
     if (window.confirm("보내시겠습니까?")) {
       const token = localStorage.getItem("token");
-      if (receiverId != "") {
+      if (userId != "") {
         if (userInfo != null && token) {
           const url = `${commonUrl}/messages`;
-          console.log(receiverId);
+          console.log(userId);
           try {
             await axios.post(
               url,
               {
-                receiverId: receiverId,
+                receiverId: userId,
                 title: title,
                 content: content,
               },
@@ -56,7 +69,6 @@ export const MessageWrite = () => {
               if (error.response?.status == 400) {
                 alert("아이디가 존재하지 않습니다.");
               }
-              
             }
           }
         }
@@ -65,6 +77,11 @@ export const MessageWrite = () => {
       }
     }
   };
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
+
   return (
     <div className="px-5">
       <h1 className="mt-5 mb-3 text-left text-lg font-semibold">쪽지 보내기</h1>
@@ -80,10 +97,12 @@ export const MessageWrite = () => {
                 icon={faUserCircle}
                 className="text-3xl text-gray-500"
               />
-              <div className="text-left">
-                <p className="text-sm">비전 트레이닝 센터</p>
-                <p>{receiverId}</p>
-              </div>
+              {leader ? (
+                <div className="text-left">
+                  <p className="text-sm">{leader.center}</p>
+                  <p>{userId}</p>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
