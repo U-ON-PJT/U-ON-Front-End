@@ -12,46 +12,54 @@ interface Props {
   gugunName: string;
 }
 
-export const MatchingList: React.FC<Props> = ({ matchList, gugunName, sidoName }) => {
+export const MatchingList: React.FC<Props> = ({
+  matchList,
+  gugunName,
+  sidoName,
+}) => {
   const { userInfo } = useContext(UserContext);
+  const hobbyList = ["스포츠", "학습, 연구", "야외 활동", "예술, 공예", "기타"];
 
-  
   return (
     <div className="">
       {/* 렌더링 될 때 바로 데이터가 가져와지지 않기 때문에
       이런식으로 사용 */}
-      {matchList.length > 0 ? 
-        <div>{matchList[0].activityId}</div> :
-        null
-      }
-      <div className="flex justify-between align-middle border-b border-gray-500 py-4">
-        <p className="font-semibold">17:00</p>
-        <p className="text-main-color font-semibold">풋살</p>
-        <div className="text-left">
-          <p>대전광역시 유성구 봉명동</p>
-          <p>인원: 2 / 6</p>
+      {matchList.length > 0 ? (
+        <div>
+          {matchList.map((match, index) => (
+            <div
+              key={match.activityId}
+              className="flex justify-between align-middle border-b border-gray-500 py-4"
+            >
+              <div>
+                <p className="font-semibold">17:00</p>
+                <p className="text-main-color font-semibold max-w-10">
+                  {hobbyList[match.type]}
+                </p>
+              </div>
+              <div className="text-left">
+                <p className="font-semibold">{match.title}</p>
+                <p>{match.activityAddress}</p>
+                <p>
+                  인원: {match.currentParticipant} / {match.maxParticipant}
+                </p>
+              </div>
+              {match.isDeadLine ? (
+                <div className="bg-gray-500 rounded-md px-3 py-3 text-white shadow-md max-h-12">
+                  신청 불가
+                </div>
+              ) : (
+                <Link
+                  to={`/matching/${match.activityId}`}
+                  className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12"
+                >
+                  신청 가능
+                </Link>
+              )}
+            </div>
+          ))}
         </div>
-        <Link
-          to="/matching"
-          className="bg-main-color rounded-md px-3 py-3 text-white shadow-md"
-        >
-          신청 가능
-        </Link>
-      </div>
-      <div className="flex justify-between align-middle border-b border-gray-500 py-4">
-        <p className="font-semibold">17:00</p>
-        <p className="text-main-color font-semibold">풋살</p>
-        <div className="text-left">
-          <p>대전광역시 유성구 봉명동</p>
-          <p>인원: 6 / 6</p>
-        </div>
-        <Link
-          to="/matching"
-          className="bg-gray-500 rounded-md px-3 py-3 text-white shadow-md"
-        >
-          신청 불가
-        </Link>
-      </div>
+      ) : null}
     </div>
   );
 };

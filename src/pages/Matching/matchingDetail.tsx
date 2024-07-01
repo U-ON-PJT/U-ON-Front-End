@@ -17,14 +17,12 @@ declare global {
   }
 }
 
-interface matchInfo{
-  
-}
-
-export const MatchingDetail = () => {
-  const [matching, setMatching] = useState(null);
+export const MatchingDetail: React.FC = () => {
+  const [matching, setMatching] = useState<any>(null);
   const { commonUrl } = useContext(UserContext);
   const { activityId } = useParams();
+  const mapRef = useRef<HTMLDivElement | null>(null);
+
   const getMatching = async () => {
     console.log(activityId);
     const url = `${commonUrl}/activities/detail/${activityId}`;
@@ -33,22 +31,34 @@ export const MatchingDetail = () => {
     console.log(data);
 
     const regex = /[^\u3131-\u3163\uac00-\ud7a3\s-]+/g;
-    const koreanPart = data.activityAddress.replace(regex, '').replace(/-/g, '');
-    const koreanPart2 = "제주특별자치도 제주시 추자면 신양리 21-1".replace(regex, '').replace(/-/g, '');
-    console.log(koreanPart);
-    console.log(koreanPart2);
-  }
+    const koreanPart = data.activityAddress
+      .replace(regex, "")
+      .replace(/-/g, "");
+    setMatching(data);
+    getUserInfo();
+  };
+
+  const getUserInfo = async () => {
+    console.log(activityId);
+    const url = `${commonUrl}/activities/detail/${activityId}`;
+    const { data } = await axios.get(url);
+  };
 
   useEffect(() => {
     getMatching();
-    let container = document.getElementById(`map`); // 지도를 담을 영역의 DOM 레퍼런스
-    let options = {
-      center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도 중심 좌표
-      level: 3, // 지도의 레벨(확대, 축소 정도)
-    };
-
-    let map = new window.kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
   }, []);
+
+  useEffect(() => {
+    if (mapRef.current && window.kakao) {
+      const container = mapRef.current;
+      const options = {
+        center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도 중심 좌표
+        level: 3, // 지도의 레벨(확대, 축소 정도)
+      };
+
+      const map = new window.kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
+    }
+  }, [matching]);
 
   const divStyle = {
     backgroundImage: 'url("/cardImg1.jpg")',
@@ -57,67 +67,90 @@ export const MatchingDetail = () => {
     height: "18vh", // div의 높이를 설정
   };
 
+  const hobbyList = ["스포츠", "학습, 연구", "야외 활동", "예술, 공예", "기타"];
+
   return (
     <div>
-      <div style={divStyle}></div>
-      <div className="px-5">
-        <h1 className="mt-5 mb-3 text-left text-lg font-semibold">
-          6월 26일 수요일 17:00
-        </h1>
-        <div className="flex justify-between align-middle place-items-center px-2 py-4">
-          <p className="text-main-color font-semibold">풋살</p>
-          <div className="text-left">
-            <p>대전광역시 유성구 봉명동</p>
-          </div>
-          <button className="bg-main-color rounded-md px-3 py-3 text-white shadow-md">
-            신청하기
-          </button>
-        </div>
-        <div id="map" style={{ height: "150px" }} />
-        <div className="flex justify-between my-4 place-items-center">
-          <div className="bg-gray-100 rounded-xl px-4 py-3 space-y-3">
-            <div className="flex space-x-2">
-              <FontAwesomeIcon icon={faLeaf} />
-              <p className="font-semibold">유저 정보</p>
+      {matching ? (
+        <div className="mb-20">
+          <div style={divStyle}></div>
+          <div className="px-5">
+            <h1 className="mt-5 mb-3 text-left text-lg font-semibold text-gray-500">
+              {matching.activityDate}
+            </h1>
+            <div className="flex justify-between space-x-3">
+              <p className="text-main-color text-lg ">
+                {hobbyList[matching.type]}
+              </p>
+              <h1 className="text-left text-lg font-semibold">
+                {matching.title}
+              </h1>
+              <button className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12">
+                신청하기
+              </button>
             </div>
-            <div className="flex space-x-3 place-items-center">
-              <FontAwesomeIcon
-                icon={faUserCircle}
-                className="text-3xl text-gray-500"
-              />
-              <div className="text-left">
-                <p className="text-sm">비전 트레이닝 센터</p>
-                <p>김첨지</p>
+            <div className="text-left py-4">
+              <p>주소 : {matching.activityAddress}</p>
+            </div>
+            <div ref={mapRef} style={{ height: "150px" }} />
+            <div className="flex justify-between my-4 place-items-center">
+              <div className="bg-gray-100 rounded-xl px-4 py-3 space-y-3">
+                <div className="flex space-x-2">
+                  <FontAwesomeIcon icon={faLeaf} />
+                  <p className="font-semibold">유저 정보</p>
+                </div>
+                <div className="flex space-x-3 place-items-center">
+                  <FontAwesomeIcon
+                    icon={faUserCircle}
+                    className="text-3xl text-gray-500"
+                  />
+                  <div className="text-left">
+                    <p className="text-sm">비전 트레이닝 센터</p>
+                    <p>김첨지</p>
+                  </div>
+                  <Link to={"/message/write"}>
+                    <div className="text-main-color">
+                      <FontAwesomeIcon icon={faComments} className="text-xl" />
+                      <p className="text-sm">문의하기</p>
+                    </div>
+                  </Link>
+                </div>
               </div>
-              <div className="text-main-color">
-                <FontAwesomeIcon icon={faComments} className="text-xl" />
-                <p className="text-sm">문의하기</p>
+              <div className="border rounded-xl border-gray-500 px-6 py-5 place-items-center space-y-2">
+                <p className="font-semibold">인원</p>
+                <p className="text-lg">
+                  {matching.currentParticipant} / {matching.maxParticipant}
+                </p>
+              </div>
+            </div>
+            <div className="text-left">
+              <p className="my-5 text-lg font-semibold text-gray-500">
+                활동 내용
+              </p>
+              <div className="flex place-content-center place-items-center space-x-5 border border-gray-500 rounded-lg px-5 py-4">
+                <p>{matching.content}</p>
+              </div>
+            </div>
+            <div className="text-left">
+              <p className="my-5 text-lg font-semibold text-gray-500">
+                경험치 정보
+              </p>
+              <div className="flex place-content-center place-items-center space-x-5 border border-gray-500 rounded-lg px-5 py-4">
+                <div className="border border-gray-500 rounded-full px-5 py-4">
+                  <FontAwesomeIcon
+                    icon={faTrophy}
+                    className="text-lg text-gray-500"
+                  />
+                </div>
+                <div>
+                  <p>참가자 전원 50p</p>
+                  <p>승리팀 추가 20p</p>
+                </div>
               </div>
             </div>
           </div>
-          <div className="border rounded-xl border-gray-500 px-6 py-5 place-items-center space-y-2">
-            <p className="font-semibold">인원</p>
-            <p className="text-lg">2 / 6</p>
-          </div>
         </div>
-        <div className="text-left">
-          <p className="my-5 text-lg font-semibold text-gray-500">
-            경험치 정보
-          </p>
-          <div className="flex place-content-center place-items-center space-x-5 border border-gray-500 rounded-lg px-5 py-4">
-            <div className="border border-gray-500 rounded-full px-5 py-4">
-              <FontAwesomeIcon
-                icon={faTrophy}
-                className="text-lg text-gray-500"
-              />
-            </div>
-            <div>
-              <p>참가자 전원 50p</p>
-              <p>승리팀 추가 20p</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 };
