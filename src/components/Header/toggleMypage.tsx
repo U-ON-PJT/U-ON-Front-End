@@ -6,6 +6,7 @@ import {
   faRightToBracket,
   faPencil,
   faUserCircle,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import {} from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,7 +32,7 @@ export const ToggleMypage = () => {
                 icon={faUserCircle}
                 className="text-xl text-gray-500"
               />
-              <div>{userInfo.userId}</div>
+              <div>{userInfo.name}</div>
             </div>
             <Link
               to="/"
@@ -41,9 +42,13 @@ export const ToggleMypage = () => {
               <FontAwesomeIcon icon={faRightFromBracket} />
               <p>로그아웃</p>
             </Link>
-            <Link to="/mypage" className="flex py-2 space-x-3 mt-2">
+            <Link to="/mypage" className="flex border-b py-2 space-x-3 mt-2">
               <FontAwesomeIcon icon={faPencil} />
-              <p>내 정보 수정</p>
+              <p>정보 수정</p>
+            </Link>
+            <Link to="/mylist" className="flex py-2 space-x-3 mt-2">
+              <FontAwesomeIcon icon={faBars} />
+              <p>신청 내역</p>
             </Link>
           </>
         )}

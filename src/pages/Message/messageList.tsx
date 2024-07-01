@@ -49,7 +49,7 @@ export const MessageList = () => {
 
   return (
     <div className="px-5 mb-10">
-      <h1 className="mt-5 mb-5 text-left text-lg font-semibold">쪽지함</h1>
+      <h1 className="my-5 mx-5 text-left text-lg font-semibold">쪽지함</h1>
       <div className="space-y-5">
         {messageList.length > 0
           ? messageList.map((message) => (
