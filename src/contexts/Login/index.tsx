@@ -1,6 +1,7 @@
 import { Children, createContext, useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 interface UserInfo {
     userId: string,
@@ -39,7 +40,7 @@ interface Props {
 
 const UserContextProvider = ({ children }: Props) => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-
+  const navigate = useNavigate();
   const [commonUrl, setCommonUrl] = useState<string>(
     "http://localhost:80/uon/"
   );
@@ -76,29 +77,34 @@ const UserContextProvider = ({ children }: Props) => {
   }, []);
 
   const login = async (userId: string, password: string) => {
-    const resp = await axios.post(`${commonUrl}users/login`, {
-      userId,
-      password,
-    });
-
-    const token = resp.data;
-    if (token != null) {
-      localStorage.setItem("token", resp.data);
-      const decodeToken: any = jwtDecode(token);
-      // console.log(decodeToken.name);
-      const user: UserInfo = {
-        userId: decodeToken.id,
-        name: decodeToken.name,
-        birth: decodeToken.birth,
-        role: decodeToken.role,
-        dongCode: decodeToken.dongCode,
-        center: decodeToken.center,
-        experience: decodeToken.experience,
-        level: decodeToken.level,
-        point: decodeToken.point,
-        phone: decodeToken.phone
-      };
-      setUserInfo(user);
+    try {
+      const resp = await axios.post(`${commonUrl}users/login`, {
+        userId,
+        password,
+      });
+  
+      const token = resp.data;
+      if (token != null) {
+        localStorage.setItem("token", resp.data);
+        const decodeToken: any = jwtDecode(token);
+        // console.log(decodeToken.name);
+        const user: UserInfo = {
+          userId: decodeToken.id,
+          name: decodeToken.name,
+          birth: decodeToken.birth,
+          role: decodeToken.role,
+          dongCode: decodeToken.dongCode,
+          center: decodeToken.center,
+          experience: decodeToken.experience,
+          level: decodeToken.level,
+          point: decodeToken.point,
+          phone: decodeToken.phone
+        };
+        setUserInfo(user);
+      }
+      navigate("/")
+    } catch (error) {
+      alert("아이디 또는 비밀번호가 일치하지 않습니다.");
     }
   };
 

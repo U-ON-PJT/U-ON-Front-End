@@ -57,7 +57,7 @@ export const BoardDetail = () => {
           {board.title}
         </p>
         <p className="text-right text-gray-500">{board.createTime}</p>
-        <pre><p className="border p-5">{board.content}</p></pre>
+        <p style={{whiteSpace: "pre-wrap"}} className="border p-5">{board.content}</p>
         <div>
           {imgs.map((img, index) => (
             <img key={index} src={img} alt={`img-${index}`}></img>
