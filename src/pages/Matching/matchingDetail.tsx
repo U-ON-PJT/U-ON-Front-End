@@ -1,5 +1,5 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { UserContext } from "contexts/Login";
 import { useNavigate, useParams } from "react-router-dom";
 import { Routes, Route, Link } from "react-router-dom";
@@ -67,8 +67,46 @@ export const MatchingDetail: React.FC = () => {
       };
 
       const map = new window.kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
+      const geocoder = new window.kakao.maps.services.Geocoder();
+      const ps = new window.kakao.maps.services.Places();
+
+      geocoder.addressSearch(matching.activityAddress, function (result: any, status: any) {
+        if (status === window.kakao.maps.services.Status.OK) {
+          const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+          const marker = new window.kakao.maps.Marker({
+            map: map,
+            position: coords,
+          });
+
+          marker.setMap(map);
+
+          map.setCenter(coords);
+        }
+
+      })
     }
   }, [matching]);
+
+  const applyMatching = async () => {
+    if (window.confirm('신청하시겠습니까?')) {
+      const url = `${commonUrl}/activities/participants/${activityId}`;
+      const token = localStorage.getItem("token");
+      try {
+        const resp = await axios.post(url, {}, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        console.log(resp);
+        alert('신청되었습니다.');
+      } catch (error: any) {
+        if (error.response && error.response.status) {
+          console.log(error.response);
+        }
+      }
+
+    }
+  }
 
   const divStyle = {
     backgroundImage: 'url("/cardImg1.jpg")',
@@ -95,7 +133,7 @@ export const MatchingDetail: React.FC = () => {
               <h1 className="text-left text-lg font-semibold">
                 {matching.title}
               </h1>
-              <button className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12">
+              <button onClick={applyMatching} className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12">
                 신청하기
               </button>
             </div>
