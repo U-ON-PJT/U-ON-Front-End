@@ -42,7 +42,7 @@ function App() {
         <Route path="/matching/write" element={<MatchingWrite />}></Route>
         <Route path="/message" element={<MessageList />}></Route>
         <Route path="/message/:messageId" element={<MessageDetail />}></Route>
-        <Route path="/message/write" element={<MessageWrite />}></Route>
+        <Route path="/message/write/:userId" element={<MessageWrite />}></Route>
         <Route path="/FAQ" element={<FAQList />}></Route>
       </Routes>
       <Link to={"/FAQ"}>
