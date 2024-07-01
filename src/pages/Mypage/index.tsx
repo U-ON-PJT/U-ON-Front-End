@@ -1,7 +1,7 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "contexts/Login";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Header } from "components/Header";
 
 export const Mypage = () => {
@@ -59,13 +59,18 @@ export const Mypage = () => {
       gugunName: user.gugunName.current?.value,
       center: user.center.current?.value,
     };
-    const { data } = await axios.put(url,userData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
+    try {
+      const { data } = await axios.put(url,userData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+      localStorage.setItem("token", data);
+      alert("변경하였습니다.");
+    } catch (error) {
+      alert("변경에 실패했습니다.");
+    }
 
-    console.log(data);
   };
 
   const getGugun = async (selectedSido: string) => {
@@ -193,6 +198,7 @@ export const Mypage = () => {
               type="text"
               name="center"
               ref={user.center}
+              defaultValue={userInfo?.center}
               className="bg-gray-100 rounded-md px-3 py-2 w-full"
             />
           </div>
@@ -204,6 +210,9 @@ export const Mypage = () => {
           수정하기
         </button>
       </form>
+      <div className="mt-5 text-gray-500">
+        <Link to="/password">비밀번호 재설정</Link>
+      </div>
     </div>
   );
 };
