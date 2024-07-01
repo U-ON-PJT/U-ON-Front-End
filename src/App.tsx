@@ -18,6 +18,7 @@ import { MessageDetail } from "pages/Message/messageDetail";
 import { Mypage } from "pages/Mypage";
 import { MessageWrite } from "pages/Message/messageWrite";
 import { FAQList } from "pages/FAQ";
+import { ApplyList } from "pages/Mypage/applyList";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Password } from "pages/Mypage/password";
@@ -31,6 +32,7 @@ function App() {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/sign-up" element={<Signup />}></Route>
         <Route path="/mypage" element={<Mypage />}></Route>
+        <Route path="/myList" element={<ApplyList />}></Route>
         <Route path="/password" element={<Password />}></Route>
         <Route path="/board" element={<Board />}></Route>
         <Route path="/board/:boardId" element={<BoardDetail />}></Route>
