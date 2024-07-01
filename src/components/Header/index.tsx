@@ -43,7 +43,6 @@ export const Header = () => {
   return (
     <div>
       <nav className="flex justify-between px-5 py-4 mt-2">
-        <FontAwesomeIcon icon={faBars} className="" />
         <Link to="/">
           <img alt="logo" src="/logo.png" width="25%" />
         </Link>
