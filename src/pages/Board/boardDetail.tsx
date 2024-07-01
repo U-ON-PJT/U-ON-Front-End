@@ -57,7 +57,7 @@ export const BoardDetail = () => {
           {board.title}
         </p>
         <p className="text-right text-gray-500">{board.createTime}</p>
-        <p className="border p-5">{board.content}</p>
+        <pre><p className="border p-5">{board.content}</p></pre>
         <div>
           {imgs.map((img, index) => (
             <img key={index} src={img} alt={`img-${index}`}></img>

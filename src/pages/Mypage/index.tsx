@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import axios from "axios";
 import { UserContext } from "contexts/Login";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,10 @@ import { Header } from "components/Header";
 
 export const Mypage = () => {
   const navigate = useNavigate();
+  const { userInfo } = useContext(UserContext);
+  const { commonUrl } = useContext(UserContext);
+  const [gugunName, setGugunName] = useState("");
+  const [sidoName, setSidoName] = useState("");
 
   const user = {
     userId: useRef<HTMLInputElement>(null),
@@ -17,7 +21,9 @@ export const Mypage = () => {
     gugunName: useRef<HTMLSelectElement>(null),
     center: useRef<HTMLInputElement>(null),
   };
+
   const [idCheck, setIdCheck] = useState(0);
+  const [gugunList, setGugunList] = useState<{ gugunName: string }[]>([]);
 
   const sidoList = [
     "강원도",
@@ -39,91 +45,68 @@ export const Mypage = () => {
     "충청북도",
   ];
 
-  const [gugunList, setGugunList] = useState<{ gugunName: string }[]>([]);
-
-  const signUp = async (event: React.FormEvent<HTMLFormElement>) => {
+  const updateUser = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (idCheck === 1) {
-      alert("ID가 중복되었습니다.");
-    } else if (idCheck === 0) {
-      alert("ID 중복체크를 해주세요.");
-    } else {
-      try {
-        const url = "http://localhost:80/uon/users/sign-up";
-        await axios.post(url, {
-          userId: user.userId.current?.value,
-          password: user.password.current?.value,
-          name: user.name.current?.value,
-          birth: user.birth.current?.value,
-          phone: user.phone.current?.value,
-          sidoName: user.sidoName.current?.value,
-          gugunName: user.gugunName.current?.value,
-          center: user.center.current?.value,
-        });
-        alert("회원가입에 성공했습니다.");
-        navigate("/login");
-      } catch (error) {
-        alert("회원가입에 실패했습니다.");
-      }
-    }
-  };
-
-  const checkDuplication = async () => {
-    const userId = user.userId.current?.value;
-    if (userId == "") {
-      alert("아이디를 입력해주세요");
-      return;
-    }
-    const url = "http://localhost:80/uon/users/exist/" + userId;
-
-    try {
-      await axios.get(url);
-      alert("생성 가능");
-      setIdCheck(2);
-    } catch (error) {
-      alert("중복된 ID가 존재합니다.");
-      setIdCheck(1);
-    }
-    console.log(idCheck);
-  };
-
-  const resetCheck = () => {
-    setIdCheck(0);
-    console.log(idCheck);
-  };
-
-  const getGugun = async () => {
-    const url = "http://localhost:80/uon/locations/guguns";
-
-    const { data } = await axios.get(url, {
-      params: {
-        sidoName: user.sidoName.current?.value,
-      },
-    });
+    const token = localStorage.getItem("token");
+    const url = `${commonUrl}/users/my-page`;
+    console.log(user.name.current?.value);
+    const userData = {
+      userId: userInfo?.userId,
+      name: user.name.current?.value,
+      birth: user.birth.current?.value,
+      phone: user.phone.current?.value,
+      sidoName: user.sidoName.current?.value,
+      gugunName: user.gugunName.current?.value,
+      center: user.center.current?.value,
+    };
+    const { data } = await axios.put(url,userData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
 
     console.log(data);
-    setGugunList([]);
+  };
+
+  const getGugun = async (selectedSido: string) => {
+    const url = `${commonUrl}/locations/guguns`;
+    const { data } = await axios.get(url, {
+      params: {
+        sidoName: selectedSido,
+      },
+    });
     setGugunList(data);
   };
+
+  const getLocation = async () => {
+    const url = `${commonUrl}/locations/names/${userInfo?.dongCode}`;
+    const { data } = await axios.get(url);
+    setSidoName(data.sidoName);
+    setGugunName(data.gugunName);
+  };
+
+  useEffect(() => {
+    getLocation();
+  }, []);
+
+  useEffect(() => {
+    if (sidoName && user.sidoName.current) {
+      user.sidoName.current.value = sidoName;
+      getGugun(sidoName); // 시도 선택에 따른 구군 리스트 불러오기
+    }
+  }, [sidoName]);
+
+  useEffect(() => {
+    if (gugunName && user.gugunName.current) {
+      user.gugunName.current.value = gugunName;
+    }
+  }, [gugunName]);
 
   return (
     <div className="px-10 py-20">
       <h1 className="text-left font-semibold text-lg">내 정보 수정</h1>
-      <form onSubmit={signUp}>
+      <form onSubmit={updateUser}>
         <div className="space-y-6 mt-10 text-left">
-          <div>
-            <label htmlFor="password" className="text-sm text-gray-500">
-              비밀번호 *
-            </label>
-            <input
-              required
-              type="password"
-              name="password"
-              ref={user.password}
-              className="bg-gray-100 rounded-md px-3 py-2 w-full"
-            />
-          </div>
           <div>
             <label htmlFor="name" className="text-sm text-gray-500">
               이름 *
@@ -133,6 +116,7 @@ export const Mypage = () => {
               type="text"
               name="name"
               ref={user.name}
+              defaultValue={userInfo?.name}
               className="bg-gray-100 rounded-md px-3 py-2 w-full"
             />
           </div>
@@ -145,6 +129,7 @@ export const Mypage = () => {
               type="date"
               name="birth"
               ref={user.birth}
+              defaultValue={userInfo?.birth}
               className="bg-gray-100 rounded-md px-3 py-2 w-full"
             />
           </div>
@@ -157,6 +142,7 @@ export const Mypage = () => {
               type="text"
               name="phone"
               ref={user.phone}
+              defaultValue={userInfo?.phone}
               className="bg-gray-100 rounded-md px-3 py-2 w-full"
             />
           </div>
@@ -167,7 +153,8 @@ export const Mypage = () => {
                 required
                 name="sidoName"
                 ref={user.sidoName}
-                onChange={getGugun}
+                onChange={(e) => getGugun(e.target.value)}
+                defaultValue={sidoName}
                 className="bg-gray-100 rounded-md px-3 py-2"
               >
                 <option hidden selected disabled value="">
@@ -183,6 +170,8 @@ export const Mypage = () => {
                 required
                 name="gugunName"
                 ref={user.gugunName}
+                value={gugunName}
+                onChange={(e) => setGugunName(e.target.value)}
                 className="bg-gray-100 rounded-md px-3 py-2"
               >
                 <option hidden selected disabled value="">

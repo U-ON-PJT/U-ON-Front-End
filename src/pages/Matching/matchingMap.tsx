@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "contexts/Login";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 declare global {
   interface Window {
     kakao: any;
@@ -18,8 +19,11 @@ export const MatchingMap: React.FC<Props> = ({ matchList, gugunName, sidoName })
   const [map, setMap] = useState<any>(null);
   const [markers, setMarkers] = useState<any[]>([]);
   const [infowindows, setInfowindows] = useState<any[]>([]);
+  const [userSido, setUserSido] = useState("");
+  const [userGugun, setUserGugun] = useState("");
 
   const { commonUrl } = useContext(UserContext);
+  const { userInfo } = useContext(UserContext);
   
   const navigate = useNavigate();
   
@@ -28,6 +32,15 @@ export const MatchingMap: React.FC<Props> = ({ matchList, gugunName, sidoName })
     console.log(activityId);
     navigate(`/matching/${activityId}`)
   }
+
+  const setLocation = async () => {
+    const url = `${commonUrl}/locations/names/${userInfo?.dongCode}`;
+    const { data } = await axios.get(url);
+    console.log(data);
+    setUserSido(data.sidoName);
+    setUserGugun(data.gugunName);
+  }
+  
 
   useEffect(() => {
     const container = document.getElementById("map");
@@ -101,16 +114,22 @@ export const MatchingMap: React.FC<Props> = ({ matchList, gugunName, sidoName })
         }
       });
     } else {
+      setLocation();
       // 현재 지역에 matchList가 존재하지 않을때 => 지도 위치만 옮김
-      geocoder.addressSearch(sidoName + gugunName, function (result: any, status: any) {
-        if (status === window.kakao.maps.services.Status.OK) {
-          const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
-          map.setCenter(coords);
-        }
-      });
+      if (userSido && userGugun) {
+        geocoder.addressSearch(userSido + userGugun, function (result: any, status: any) {
+          console.log(userSido)
+          console.log(userGugun)
+          console.log(result);
+          if (status === window.kakao.maps.services.Status.OK) {
+            const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+            map.setCenter(coords);
+          }
+        });
+      }
     }
     
-  }, [map, matchList]);
+  }, [map, matchList, userSido, userGugun]);
 
   return <div id="map" style={{ width: "350px", height: "350px" }} />;
 };
