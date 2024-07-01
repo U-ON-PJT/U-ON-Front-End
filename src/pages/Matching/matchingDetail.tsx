@@ -19,34 +19,44 @@ declare global {
 
 export const MatchingDetail: React.FC = () => {
   const [matching, setMatching] = useState<any>(null);
+  const [leader, setLeader] = useState<any>(null);
   const { commonUrl } = useContext(UserContext);
   const { activityId } = useParams();
   const mapRef = useRef<HTMLDivElement | null>(null);
 
   const getMatching = async () => {
-    console.log(activityId);
     const url = `${commonUrl}/activities/detail/${activityId}`;
     const { data } = await axios.get(url);
-
-    console.log(data);
 
     const regex = /[^\u3131-\u3163\uac00-\ud7a3\s-]+/g;
     const koreanPart = data.activityAddress
       .replace(regex, "")
       .replace(/-/g, "");
     setMatching(data);
-    getUserInfo();
   };
 
   const getUserInfo = async () => {
-    console.log(activityId);
-    const url = `${commonUrl}/activities/detail/${activityId}`;
-    const { data } = await axios.get(url);
+    const userId = matching.userId;
+    const url = `${commonUrl}/users/others/${userId}`;
+    const token = localStorage.getItem("token");
+    const { data } = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setLeader(data);
+    console.log(data);
   };
 
   useEffect(() => {
     getMatching();
   }, []);
+
+  useEffect(() => {
+    if (matching) {
+      getUserInfo();
+    }
+  }, [matching]);
 
   useEffect(() => {
     if (mapRef.current && window.kakao) {
@@ -99,16 +109,18 @@ export const MatchingDetail: React.FC = () => {
                   <FontAwesomeIcon icon={faLeaf} />
                   <p className="font-semibold">유저 정보</p>
                 </div>
-                <div className="flex space-x-3 place-items-center">
+                <div className="flex space-x-5 place-items-center">
                   <FontAwesomeIcon
                     icon={faUserCircle}
                     className="text-3xl text-gray-500"
                   />
-                  <div className="text-left">
-                    <p className="text-sm">비전 트레이닝 센터</p>
-                    <p>김첨지</p>
-                  </div>
-                  <Link to={"/message/write"}>
+                  {leader ? (
+                    <div className="text-left">
+                      <p className="text-sm">{leader.center}</p>
+                      <p>{leader.name}</p>
+                    </div>
+                  ) : null}
+                  <Link to={`/message/write/${matching.userId}`}>
                     <div className="text-main-color">
                       <FontAwesomeIcon icon={faComments} className="text-xl" />
                       <p className="text-sm">문의하기</p>
