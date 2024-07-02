@@ -82,7 +82,7 @@ export const Write = () => {
         }
       }
 
-      const url = `${commonUrl}boards`;
+      const url = `${commonUrl}/boards`;
       console.log(userInfo.userId);
       // try {
       const resp = await axios.post(
