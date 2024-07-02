@@ -7,6 +7,7 @@ import {
   faPencil,
   faUserCircle,
   faBars,
+  faMedal,
 } from "@fortawesome/free-solid-svg-icons";
 import {} from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,6 +34,10 @@ export const ToggleMypage = () => {
                 className="text-xl text-gray-500"
               />
               <div>{userInfo.name}</div>
+              <div className="flex space-x-1 text-yellow-600">
+                <p>레벨 {userInfo?.level}</p>
+                <FontAwesomeIcon icon={faMedal} className="mt-1" />
+              </div>
             </div>
             <Link
               to="/"
@@ -48,7 +53,7 @@ export const ToggleMypage = () => {
             </Link>
             <Link to="/mylist" className="flex py-2 space-x-3 mt-2">
               <FontAwesomeIcon icon={faBars} />
-              <p>신청 내역</p>
+              <p>활동 내역</p>
             </Link>
           </>
         )}

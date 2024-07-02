@@ -39,9 +39,10 @@ export const Matching = () => {
   const { userInfo } = useContext(UserContext);
   const [gugunList, setGugunList] = useState<{ gugunName: string }[]>([]);
   const [matchList, setMatchList] = useState<any[]>([]);
-  const [userSidoName, setUserSidoName] = useState(""); 
-  const [userGugunName, setUserGugunName] = useState(""); 
-
+  const [userSidoName, setUserSidoName] = useState("");
+  const [userGugunName, setUserGugunName] = useState("");
+  const [firstRendering, setFirstRendering] = useState(true);
+  const [locRender, setLocRender] = useState(true);
   // 카테고리 => type
   // 0은 카테고리 없이 전체 호출
   // 나머지는 select에 넣어있는 순서대로 1, 2, 3, 4, 5
@@ -61,8 +62,7 @@ export const Matching = () => {
   };
 
   const cDate = useRef<HTMLParagraphElement>(null);
-  const [parsingDate, setParsingDate] = useState("");
-  const [parsingDongCode, setParsingDongCode] = useState();
+
   const [today, setToday] = useState(new Date());
   // const today = new Date();
   const weekday = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
@@ -94,7 +94,6 @@ export const Matching = () => {
       },
     });
 
-    console.log(data);
     setGugunList([]);
     setGugunList(data);
   };
@@ -104,8 +103,9 @@ export const Matching = () => {
     const { data } = await axios.get(url);
     setUserSidoName(data.sidoName);
     setUserGugunName(data.gugunName);
-    console.log("getLocation", data.sidoName)
+    console.log("locationData:", data)
   }
+
 
   // 카테고리 혹은 구군 선택(수정) 시 매칭 정보 불러오기
   const getMatchingList = async () => {
@@ -117,12 +117,6 @@ export const Matching = () => {
         gugunName: gugun.current?.value,
       },
     });
-    console.log("resp: ", resp.data);
-    setParsingDongCode(resp.data);
-    console.log(parsingDate)
-    console.log(resp.data);
-    console.log(today);
-
     const month = (today.getMonth() + 1).toString().padStart(2, '0');
     const day = today.getDate().toString().padStart(2, '0');
     const formattedDate = `${month}-${day}`;
@@ -137,27 +131,26 @@ export const Matching = () => {
       },
     });
     setMatchList(data);
+    setFirstRendering(false);
+    console.log(data);
   };
 
   // 맨 처음 화면 렌더링 시 매칭 데이터를 불러오기 위함
   // 기준은 회원가입 시 설정한 주소(동코드)
   const getFirstList = async () => {
     const url = `${commonUrl}/activities/allSelect`;
-    // const today = new Date();
+
     const month =
       today.getMonth() + 1 < 10
         ? `0${today.getMonth() + 1}`
         : `${today.getMonth() + 1}`;
     const day = today.getDate();
-    const formmatedDay = day.toString().padStart(2, '0');
+    const formatedDay = day.toString().padStart(2, '0');
 
-    console.log("dongcode: ", userInfo?.dongCode.substring(0, 5));
-    console.log(month);
-    console.log(formmatedDay);
     const { data } = await axios.get(url, {
       params: {
         type: 0,
-        selectDate: `2024-${month}-${formmatedDay}`,
+        selectDate: `2024-${month}-${formatedDay}`,
         parsingDongCode: userInfo?.dongCode.substring(0, 5),
         algo: order
       },
@@ -165,7 +158,7 @@ export const Matching = () => {
     setMatchList(data);
     console.log("firstList", data);
   };
-
+  // getFirstList();
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabClick = (id: number) => {
@@ -216,52 +209,53 @@ export const Matching = () => {
 
   const orderZero = () => {
     setOrder(0);
-    // getMatchingList();
   }
   const orderOne = () => {
     setOrder(1);
-    // getMatchingList();
   }
 
   useEffect(() => {
     getLocation();
-  }, []);
+  }, [])
 
   useEffect(() => {
-    if (userSidoName && user.sidoName.current) {
+    if (user.sidoName.current && userSidoName) {
       user.sidoName.current.value = userSidoName;
-      getGugun(); // 시도 선택에 따른 구군 리스트 불러오기
+      console.log("first");
+      getGugun();
     }
-  }, [userSidoName]);
-  
+
+  }, [userSidoName])
+
   useEffect(() => {
-    getMatchingList();
-  }, [today])
+    if (user.gugunName.current && userGugunName && !locRender) {
+      user.gugunName.current.value = userGugunName;
+      console.log("second");
+    }
+    setLocRender(true);
+
+  }, [userGugunName])
+
+
+  useEffect(() => {
+    if (userInfo && !firstRendering) {
+      getFirstList();
+    }
+  }, [userInfo, firstRendering]);
 
   useEffect(() => {
     getMatchingList();
-  }, [order])
-  
-  // useEffect(() => {
-  //   if (userInfo) {
-  //     getFirstList();
-  //   }
-  // }, [userInfo]);
-  
-  useEffect(() => {
-    if (cDate.current) {
-      setParsingDate(formatDate(cDate.current.textContent));
-    }
-  }, [cDate]);
+  }, [today, order])
 
-  
+
+
 
   return (
     <div className="">
       <div className="px-5 flex justify-between mb-5">
         <FontAwesomeIcon onClick={prevDate} icon={faAngleLeft} className="mt-1" />
         <p className="text-lg" ref={cDate}>
-          {today.getMonth()+1}월 {today.getDate()}일 {weekday[today.getDay()]}
+          {today.getMonth() + 1}월 {today.getDate()}일 {weekday[today.getDay()]}
         </p>
         <FontAwesomeIcon onClick={nextDate} icon={faAngleRight} className="mt-1" />
       </div>
@@ -289,39 +283,46 @@ export const Matching = () => {
             </option>
           ))}
         </select>
-        <select
-          required
-          name="sidoName"
-          ref={user.sidoName}
-          onChange={getGugun}
-          className="border border-gray-500 rounded-full px-3 py-2"
-          defaultValue={userSidoName}
-        >
-          <option hidden selected disabled value="">
-            시도 선택
-          </option>
-          {sidoList.map((sido) => (
-            <option key={sido} value={sido}>
-              {sido}
+        {userSidoName ?
+          <select
+            required
+            name="sidoName"
+            ref={user.sidoName}
+            onChange={getGugun}
+            className="border border-gray-500 rounded-full px-3 py-2"
+          >
+            <option hidden selected disabled value="">
+              시도 선택
             </option>
-          ))}
+            {sidoList.map((sido) => (
+              <option key={sido} value={sido}>
+                {sido}
+              </option>
+            ))}
           </select>
-        <select
-          required
-          name="gugunName"
-          ref={gugun}
-          className="border border-gray-500 rounded-full px-3 py-2"
-          onChange={getMatchingList}
-        >
-          <option hidden selected disabled value="">
-            구군 선택
-          </option>
-          {gugunList.map((gugun) => (
-            <option key={gugun.gugunName} value={gugun.gugunName}>
-              {gugun.gugunName}
+          :
+          null
+        }
+        {userGugunName ?
+          <select
+            required
+            name="gugunName"
+            ref={user.gugunName}
+            className="border border-gray-500 rounded-full px-3 py-2"
+            onChange={getMatchingList}
+          >
+            <option hidden selected disabled value="">
+              구군 선택
             </option>
-          ))}
-        </select>
+            {gugunList.map((gugun) => (
+              <option key={gugun.gugunName} value={gugun.gugunName}>
+                {gugun.gugunName}
+              </option>
+            ))}
+          </select>
+          :
+          null
+        }
       </div>
       <div className="flex justify-between mb-4">
         <div
