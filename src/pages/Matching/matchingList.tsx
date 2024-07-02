@@ -44,7 +44,7 @@ export const MatchingList: React.FC<Props> = ({
                   인원: {match.currentParticipant} / {match.maxParticipant}
                 </p>
               </div>
-              {match.isDeadLine ? (
+              {match.isDeadline == 1 ? (
                 <div className="bg-gray-500 rounded-md px-3 py-3 text-white shadow-md max-h-12">
                   신청 불가
                 </div>
