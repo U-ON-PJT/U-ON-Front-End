@@ -3,7 +3,7 @@ import axios from "axios";
 import { UserContext } from "contexts/Login";
 import { useNavigate } from "react-router-dom";
 import { Routes, Route, Link } from "react-router-dom";
-import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface Props {
@@ -32,7 +32,9 @@ export const MatchingList: React.FC<Props> = ({
               className="flex justify-between align-middle border-b border-gray-500 py-4"
             >
               <div>
-                <p className="font-semibold">{match.activityDate.split(" ")[1].substring(0,5)} </p>
+                <p className="font-semibold">
+                  {match.activityDate.split(" ")[1].substring(0, 5)}{" "}
+                </p>
                 <p className="text-main-color font-semibold max-w-10">
                   {hobbyList[match.type]}
                 </p>
@@ -60,8 +62,13 @@ export const MatchingList: React.FC<Props> = ({
           ))}
         </div>
       ) : (
-          <div>매치가 존재하지 않습니다. 지역과 날짜를 선택해주세요</div>
+        <div>매치가 존재하지 않습니다. 지역과 날짜를 선택해주세요</div>
       )}
+      <Link to={"/matching/write"}>
+        <div className="bg-main-color py-5 px-6 shadow-lg rounded-full fixed left-5 bottom-5 z-10">
+          <FontAwesomeIcon icon={faPencil} className="text-white" />
+        </div>
+      </Link>
     </div>
   );
 };
