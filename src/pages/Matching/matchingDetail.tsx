@@ -34,11 +34,12 @@ export const MatchingDetail: React.FC = () => {
       .replace(regex, "")
       .replace(/-/g, "");
     setMatching(data);
+    console.log(data);
   };
 
   const getUserInfo = async () => {
     const userId = matching.userId;
-    const url = `${commonUrl}/users/others/user3`;
+    const url = `${commonUrl}/users/others/${userId}`;
     const token = localStorage.getItem("token");
     const { data } = await axios.get(url, {
       headers: {
@@ -47,6 +48,7 @@ export const MatchingDetail: React.FC = () => {
     });
     setLeader(data);
     console.log(data);
+    console.log(userInfo?.userId);
   };
 
   useEffect(() => {
@@ -139,16 +141,25 @@ export const MatchingDetail: React.FC = () => {
 
   const completeMatching = () => {
     if (window.confirm('활동 완료?')) {
-      const url = `${commonUrl}/activities/complete/${activityId}`;
-      const token = localStorage.getItem("token");
-      try {
-        axios.put(url, {}, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        alert("활동을 완료했습니다.");
-      } catch (error) {
+      const activityDate = new Date(matching.activityDate);
+      const currentDate = new Date();
+      if (currentDate < activityDate) {
+        alert("활동 시간이 이전입니다.");
+      }
+      else {
+        const url = `${commonUrl}/activities/complete/${activityId}`;
+        const token = localStorage.getItem("token");
+        try {
+          axios.put(url, {}, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          })
+          alert("활동을 완료했습니다.");
+          navigate(`/matching/${activityId}`)
+        } catch (error) {
+          
+        }
         
       }
     }
@@ -179,12 +190,24 @@ export const MatchingDetail: React.FC = () => {
               <h1 className="text-left text-lg font-semibold">
                 {matching.title}
               </h1>
-              <button
-                onClick={applyMatching}
-                className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12"
-              >
-                신청하기
-              </button>
+              {matching.isCompleted == 0 ? (
+                matching.isDeadline == 1 ? (
+                  <div className="bg-gray-500 rounded-md px-3 py-3 text-white shadow-md max-h-12">
+                    신청 불가
+                  </div>
+                ) : (
+                  <button
+                    onClick={applyMatching}
+                    className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12"
+                  >
+                    신청하기
+                  </button>
+                )
+              ) : (
+                <div className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12">
+                  활동종료
+                </div>
+  )}
             </div>
             <div className="text-left py-4">
               <p>주소 : {matching.activityAddress}</p>
@@ -246,7 +269,7 @@ export const MatchingDetail: React.FC = () => {
                   <p>승리팀 추가 20p</p>
                 </div>
               </div>
-              {userInfo && userInfo.userId == matching.userId?
+              {userInfo && (userInfo.userId == matching.userId)?
                 <div className="text-center mt-3">
                   <button onClick={deleteMatching} className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12 mr-3">
                     삭제하기
@@ -256,9 +279,7 @@ export const MatchingDetail: React.FC = () => {
                       활동종료
                     </button>
                     :
-                    <button className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12">
-                      활동완료
-                    </button>
+                    null
                   }
                 </div>
                 :null
