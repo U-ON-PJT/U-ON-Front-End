@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Routes, Route, Link } from "react-router-dom";
 import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { MyInfo } from "./myInfo";
 
 export const ApplyList = () => {
   const { commonUrl } = useContext(UserContext);
@@ -55,7 +56,8 @@ export const ApplyList = () => {
 
   return (
     <div className="px-10 my-10">
-      <div className="mb-10">
+      <MyInfo />
+      <div className="my-10">
         <h1 className="mb-5 text-left text-lg font-semibold">
           내가 등록한 매칭
         </h1>
