@@ -126,44 +126,40 @@ export const MatchingDetail: React.FC = () => {
       try {
         axios.delete(url, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        alert('삭제했습니다.');
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        alert("삭제했습니다.");
         navigate("/");
-      } catch (error) {
-        
-      }
-
-      
+      } catch (error) {}
     }
-  }
+  };
 
   const completeMatching = () => {
-    if (window.confirm('활동 완료?')) {
+    if (window.confirm("활동 완료?")) {
       const activityDate = new Date(matching.activityDate);
       const currentDate = new Date();
       if (currentDate < activityDate) {
         alert("활동 시간이 이전입니다.");
-      }
-      else {
+      } else {
         const url = `${commonUrl}/activities/complete/${activityId}`;
         const token = localStorage.getItem("token");
         try {
-          axios.put(url, {}, {
-            headers: {
-              Authorization: `Bearer ${token}`
+          axios.put(
+            url,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             }
-          })
+          );
           alert("활동을 완료했습니다.");
-          navigate(`/matching/${activityId}`)
-        } catch (error) {
-          
-        }
-        
+          navigate(`/matching/${activityId}`);
+        } catch (error) {}
       }
     }
-  }
+  };
 
   const divStyle = {
     backgroundImage: 'url("/cardImg1.jpg")',
@@ -204,10 +200,10 @@ export const MatchingDetail: React.FC = () => {
                   </button>
                 )
               ) : (
-                <div className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12">
-                  활동종료
+                <div className="bg-blue-900 rounded-md px-3 py-3 text-white shadow-md max-h-12">
+                  활동완료
                 </div>
-  )}
+              )}
             </div>
             <div className="text-left py-4">
               <p>주소 : {matching.activityAddress}</p>
@@ -269,21 +265,24 @@ export const MatchingDetail: React.FC = () => {
                   <p>승리팀 추가 20p</p>
                 </div>
               </div>
-              {userInfo && (userInfo.userId == matching.userId)?
-                <div className="text-center mt-3">
-                  <button onClick={deleteMatching} className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12 mr-3">
+              {userInfo && userInfo.userId == matching.userId ? (
+                <div className="text-center mt-8">
+                  <button
+                    onClick={deleteMatching}
+                    className="bg-red-500 rounded-md px-3 py-3 text-white shadow-md max-h-12 mr-3"
+                  >
                     삭제하기
                   </button>
-                  {matching.isCompleted == 0 ?
-                    <button onClick={completeMatching} className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12">
+                  {matching.isCompleted == 0 ? (
+                    <button
+                      onClick={completeMatching}
+                      className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12"
+                    >
                       활동종료
                     </button>
-                    :
-                    null
-                  }
+                  ) : null}
                 </div>
-                :null
-              }
+              ) : null}
             </div>
           </div>
         </div>
