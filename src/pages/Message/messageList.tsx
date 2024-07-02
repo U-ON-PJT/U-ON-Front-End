@@ -27,7 +27,7 @@ export const MessageList = () => {
     const token = localStorage.getItem("token");
 
     if (token) {
-      const url = `${commonUrl}/messages/0`;
+      const url = `${commonUrl}/messages`;
 
       const { data } = await axios.get(url, {
         headers: {
