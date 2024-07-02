@@ -3,7 +3,7 @@ import axios from "axios";
 import { UserContext } from "contexts/Login";
 import { useNavigate } from "react-router-dom";
 import { Routes, Route, Link } from "react-router-dom";
-import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const ApplyList = () => {
@@ -63,11 +63,25 @@ export const ApplyList = () => {
           ? makeList.map((list, index) => (
               <div
                 key={list.activityId}
-                className={`flex text-left space-x-5 px-5 py-3 ${
+                className={`flex justify-between place-items-center text-left px-5 py-3 ${
                   index % 2 === 0 ? "bg-gray-100" : ""
                 }`}
               >
-                <Link to={`/matching/${list.activityId}`}>{list.title}</Link>
+                <div>
+                  <div className="flex space-x-3">
+                    <p className="font-semibold text-gray-500">
+                      {list.activityDate.split(" ")[0].substring(0, 10)}{" "}
+                    </p>
+                    <p className="text-main-color font-semibold">
+                      {hobbyList[list.type]}
+                    </p>
+                  </div>
+                  <p className="font-semibold">{list.title}</p>
+                  <p>{list.activityAddress}</p>
+                </div>
+                <Link to={`/matching/${list.activityId}`}>
+                  <FontAwesomeIcon icon={faCaretRight} className="text-lg" />
+                </Link>
               </div>
             ))
           : null}
@@ -80,11 +94,25 @@ export const ApplyList = () => {
           ? applyList.map((list, index) => (
               <div
                 key={list.activityId}
-                className={`flex text-left space-x-5 px-5 py-3 ${
+                className={`flex justify-between place-items-center text-left px-5 py-3 ${
                   index % 2 === 0 ? "bg-gray-100" : ""
                 }`}
               >
-                <Link to={`/matching/${list.activityId}`}>{list.title}</Link>
+                <div>
+                  <div className="flex space-x-3">
+                    <p className="font-semibold text-gray-500">
+                      {list.activityDate.split(" ")[0].substring(0, 10)}{" "}
+                    </p>
+                    <p className="text-main-color font-semibold">
+                      {hobbyList[list.type]}
+                    </p>
+                  </div>
+                  <p className="font-semibold">{list.title}</p>
+                  <p>{list.activityAddress}</p>
+                </div>
+                <Link to={`/matching/${list.activityId}`}>
+                  <FontAwesomeIcon icon={faCaretRight} className="text-lg" />
+                </Link>
               </div>
             ))
           : null}
