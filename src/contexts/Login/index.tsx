@@ -4,16 +4,16 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 interface UserInfo {
-    userId: string,
-    name: string,
-    birth: string,
-    role: string,
-    dongCode: string,
-    center: string,
-    experience: string,
-    level: string,
-    point: string,
-    phone: string
+  userId: string,
+  name: string,
+  birth: string,
+  role: string,
+  dongCode: string,
+  center: string,
+  experience: string,
+  level: string,
+  point: string,
+  phone: string
 }
 
 interface Context {
@@ -27,8 +27,8 @@ interface Context {
 const initialContext: Context = {
   commonUrl: "http://localhost:80/uon/",
   userInfo: null,
-  login: () => {},
-  logout: () => {},
+  login: () => { },
+  logout: () => { },
 };
 
 // Context 생성
@@ -82,7 +82,7 @@ const UserContextProvider = ({ children }: Props) => {
         userId,
         password,
       });
-  
+
       const token = resp.data;
       if (token != null) {
         localStorage.setItem("token", resp.data);

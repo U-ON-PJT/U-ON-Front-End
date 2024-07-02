@@ -63,29 +63,37 @@ export const ApplyList = () => {
         </h1>
         {makeList
           ? makeList.map((list, index) => (
-              <div
-                key={list.activityId}
-                className={`flex justify-between place-items-center text-left px-5 py-3 ${
-                  index % 2 === 0 ? "bg-gray-100" : ""
+            <div
+              key={list.activityId}
+              className={`flex justify-between place-items-center text-left px-5 py-3 ${index % 2 === 0 ? "bg-gray-100" : ""
                 }`}
-              >
-                <div>
-                  <div className="flex space-x-3">
-                    <p className="font-semibold text-gray-500">
-                      {list.activityDate.split(" ")[0].substring(0, 10)}{" "}
-                    </p>
-                    <p className="text-main-color font-semibold">
-                      {hobbyList[list.type]}
-                    </p>
-                  </div>
-                  <p className="font-semibold">{list.title}</p>
-                  <p>{list.activityAddress}</p>
+            >
+              <div>
+                <div className="flex space-x-3">
+                  <p className="font-semibold text-gray-500">
+                    {list.activityDate.split(" ")[0].substring(0, 10)}{" "}
+                  </p>
+                  <p className="text-main-color font-semibold">
+                    {hobbyList[list.type]}
+                  </p>
+                  {
+                    list.isCompleted === 1 ?
+                      <p className="text-red-500">
+                        활동 완료
+                      </p> :
+                      <p className="text-blue-500">
+                        활동 예정
+                      </p>
+                  }
                 </div>
-                <Link to={`/matching/${list.activityId}`}>
-                  <FontAwesomeIcon icon={faCaretRight} className="text-lg" />
-                </Link>
+                <p className="font-semibold">{list.title}</p>
+                <p>{list.activityAddress}</p>
               </div>
-            ))
+              <Link to={`/matching/${list.activityId}`}>
+                <FontAwesomeIcon icon={faCaretRight} className="text-lg" />
+              </Link>
+            </div>
+          ))
           : null}
       </div>
       <div>
@@ -94,29 +102,37 @@ export const ApplyList = () => {
         </h1>
         {applyList
           ? applyList.map((list, index) => (
-              <div
-                key={list.activityId}
-                className={`flex justify-between place-items-center text-left px-5 py-3 ${
-                  index % 2 === 0 ? "bg-gray-100" : ""
+            <div
+              key={list.activityId}
+              className={`flex justify-between place-items-center text-left px-5 py-3 ${index % 2 === 0 ? "bg-gray-100" : ""
                 }`}
-              >
-                <div>
-                  <div className="flex space-x-3">
-                    <p className="font-semibold text-gray-500">
-                      {list.activityDate.split(" ")[0].substring(0, 10)}{" "}
-                    </p>
-                    <p className="text-main-color font-semibold">
-                      {hobbyList[list.type]}
-                    </p>
-                  </div>
-                  <p className="font-semibold">{list.title}</p>
-                  <p>{list.activityAddress}</p>
+            >
+              <div>
+                <div className="flex space-x-3">
+                  <p className="font-semibold text-gray-500">
+                    {list.activityDate.split(" ")[0].substring(0, 10)}{" "}
+                  </p>
+                  <p className="text-main-color font-semibold">
+                    {hobbyList[list.type]}
+                  </p>
+                  {
+                    list.isComplete === 1 ?
+                      <p className="text-red-500">
+                        활동 완료
+                      </p> :
+                      <p className="text-blue-500">
+                        활동 예정
+                      </p>
+                  }
                 </div>
-                <Link to={`/matching/${list.activityId}`}>
-                  <FontAwesomeIcon icon={faCaretRight} className="text-lg" />
-                </Link>
+                <p className="font-semibold">{list.title}</p>
+                <p>{list.activityAddress}</p>
               </div>
-            ))
+              <Link to={`/matching/${list.activityId}`}>
+                <FontAwesomeIcon icon={faCaretRight} className="text-lg" />
+              </Link>
+            </div>
+          ))
           : null}
       </div>
     </div>
