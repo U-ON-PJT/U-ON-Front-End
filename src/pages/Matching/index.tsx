@@ -63,6 +63,7 @@ export const Matching = () => {
   const cDate = useRef<HTMLParagraphElement>(null);
   const [parsingDate, setParsingDate] = useState("");
   const [parsingDongCode, setParsingDongCode] = useState();
+  
   const [today, setToday] = useState(new Date());
   // const today = new Date();
   const weekday = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
@@ -94,7 +95,6 @@ export const Matching = () => {
       },
     });
 
-    console.log(data);
     setGugunList([]);
     setGugunList(data);
   };
@@ -106,6 +106,7 @@ export const Matching = () => {
     setUserGugunName(data.gugunName);
     console.log("getLocation", data.sidoName)
   }
+  // getLocation();
 
   // 카테고리 혹은 구군 선택(수정) 시 매칭 정보 불러오기
   const getMatchingList = async () => {
@@ -117,12 +118,6 @@ export const Matching = () => {
         gugunName: gugun.current?.value,
       },
     });
-    console.log("resp: ", resp.data);
-    setParsingDongCode(resp.data);
-    console.log(parsingDate)
-    console.log(resp.data);
-    console.log(today);
-
     const month = (today.getMonth() + 1).toString().padStart(2, '0');
     const day = today.getDate().toString().padStart(2, '0');
     const formattedDate = `${month}-${day}`;
@@ -149,15 +144,12 @@ export const Matching = () => {
         ? `0${today.getMonth() + 1}`
         : `${today.getMonth() + 1}`;
     const day = today.getDate();
-    const formmatedDay = day.toString().padStart(2, '0');
+    const formatedDay = day.toString().padStart(2, '0');
 
-    console.log("dongcode: ", userInfo?.dongCode.substring(0, 5));
-    console.log(month);
-    console.log(formmatedDay);
     const { data } = await axios.get(url, {
       params: {
         type: 0,
-        selectDate: `2024-${month}-${formmatedDay}`,
+        selectDate: `2024-${month}-${formatedDay}`,
         parsingDongCode: userInfo?.dongCode.substring(0, 5),
         algo: order
       },
@@ -165,7 +157,7 @@ export const Matching = () => {
     setMatchList(data);
     console.log("firstList", data);
   };
-
+  // getFirstList();
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabClick = (id: number) => {
@@ -222,31 +214,17 @@ export const Matching = () => {
     setOrder(1);
     // getMatchingList();
   }
-
+  
   useEffect(() => {
-    getLocation();
-  }, []);
-
-  useEffect(() => {
-    if (userSidoName && user.sidoName.current) {
-      user.sidoName.current.value = userSidoName;
-      getGugun(); // 시도 선택에 따른 구군 리스트 불러오기
+    if (userInfo) {
+      getFirstList();
     }
-  }, [userSidoName]);
-  
-  useEffect(() => {
-    getMatchingList();
-  }, [today])
+  }, [userInfo]);
 
   useEffect(() => {
-    getMatchingList();
-  }, [order])
-  
-  // useEffect(() => {
-  //   if (userInfo) {
-  //     getFirstList();
-  //   }
-  // }, [userInfo]);
+    if (today || order)
+      getMatchingList();
+  }, [today, order])
   
   useEffect(() => {
     if (cDate.current) {
@@ -295,7 +273,6 @@ export const Matching = () => {
           ref={user.sidoName}
           onChange={getGugun}
           className="border border-gray-500 rounded-full px-3 py-2"
-          defaultValue={userSidoName}
         >
           <option hidden selected disabled value="">
             시도 선택

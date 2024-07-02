@@ -1,7 +1,7 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { Login } from "pages/Login";
 import { useNavigate } from "react-router-dom";
 import { Header } from "components/Header";
@@ -21,8 +21,22 @@ import { FAQList } from "pages/FAQ";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Password } from "pages/Mypage/password";
+import { Splash } from "components/Splash";
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
+  }, []);
+
+  if (isLoading) {
+    return <Splash/>
+  }
   return (
     <div className="App">
       <Header />

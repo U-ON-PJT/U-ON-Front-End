@@ -21,9 +21,10 @@ export const MatchingDetail: React.FC = () => {
   const [matching, setMatching] = useState<any>(null);
   const [leader, setLeader] = useState<any>(null);
   const { commonUrl } = useContext(UserContext);
+  const { userInfo } = useContext(UserContext);
   const { activityId } = useParams();
   const mapRef = useRef<HTMLDivElement | null>(null);
-
+  const navigate = useNavigate();
   const getMatching = async () => {
     const url = `${commonUrl}/activities/detail/${activityId}`;
     const { data } = await axios.get(url);
@@ -105,6 +106,43 @@ export const MatchingDetail: React.FC = () => {
         }
       }
 
+    }
+  }
+
+  const deleteMatching = () => {
+    if (window.confirm("삭제하시겠습니까?")) {
+      const url = `${commonUrl}/activities/${activityId}`;
+      const token = localStorage.getItem("token");
+      try {
+        axios.delete(url, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        alert('삭제했습니다.');
+        navigate("/");
+      } catch (error) {
+        
+      }
+
+      
+    }
+  }
+
+  const completeMatching = () => {
+    if (window.confirm('활동 완료?')) {
+      const url = `${commonUrl}/activities/complete/${activityId}`;
+      const token = localStorage.getItem("token");
+      try {
+        axios.put(url, {}, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        alert("활동을 완료했습니다.");
+      } catch (error) {
+        
+      }
     }
   }
 
@@ -197,6 +235,23 @@ export const MatchingDetail: React.FC = () => {
                   <p>승리팀 추가 20p</p>
                 </div>
               </div>
+              {userInfo && userInfo.userId == matching.userId?
+                <div className="text-center mt-3">
+                  <button onClick={deleteMatching} className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12 mr-3">
+                    삭제하기
+                  </button>
+                  {matching.isCompleted == 0 ?
+                    <button onClick={completeMatching} className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12">
+                      활동종료
+                    </button>
+                    :
+                    <button className="bg-main-color rounded-md px-3 py-3 text-white shadow-md max-h-12">
+                      활동완료
+                    </button>
+                  }
+                </div>
+                :null
+              }
             </div>
           </div>
         </div>
